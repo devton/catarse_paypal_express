@@ -3,7 +3,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../test/dummy/config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
-require 'fakeweb'
+#require 'fakeweb'
 
 ENGINE_RAILS_ROOT=File.join(File.dirname(__FILE__), '../')
 
@@ -73,3 +73,8 @@ end
   #FakeWeb.register_uri(:post, dinero_mail_url(path, options[:url]), opts)
 #end
 
+def paypal_setup_purchase_success_response
+  { "timestamp"=>"2012-07-23T00:24:21Z", "ack"=>"Success", "correlation_id"=>"dcb8596be51cd", "version"=>"62.0", "build"=>"3332236",
+    "token"=>"EC-49X25168KR2556548", "Timestamp"=>"2012-07-23T00:24:21Z", "Ack"=>"Success", "CorrelationID"=>"dcb8596be51cd", 
+    "Version"=>"62.0", "Build"=>"3332236", "Token"=>"EC-49X25168KR2556548" }
+end
