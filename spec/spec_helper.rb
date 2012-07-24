@@ -61,18 +61,6 @@ def fixture_file(filename)
   File.read(file_path)
 end
 
-#def stub_get(path, filename, options={})
-  #opts = {:body => fixture_file(filename)}.merge(options)
-
-  #FakeWeb.register_uri(:get, dinero_mail_url(path), opts)
-#end
-
-#def stub_post(path, filename, options={})
-  #opts = {:body => fixture_file(filename)}.merge(options)
-
-  #FakeWeb.register_uri(:post, dinero_mail_url(path, options[:url]), opts)
-#end
-
 def paypal_setup_purchase_success_response
   { "timestamp"=>"2012-07-23T00:24:21Z", "ack"=>"Success", "correlation_id"=>"dcb8596be51cd", "version"=>"62.0", "build"=>"3332236",
     "token"=>"EC-49X25168KR2556548", "Timestamp"=>"2012-07-23T00:24:21Z", "Ack"=>"Success", "CorrelationID"=>"dcb8596be51cd", 

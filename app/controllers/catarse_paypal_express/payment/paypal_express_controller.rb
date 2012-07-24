@@ -1,6 +1,12 @@
 module CatarsePaypalExpress::Payment
   class PaypalExpressController < ApplicationController
+    skip_before_filter :verify_authenticity_token, :only => [:notifications]
+    skip_before_filter :detect_locale, :only => [:notifications]
+    skip_before_filter :set_locale, :only => [:notifications]
+
     before_filter :setup_gateway
+
+    SCOPE = "projects.backers.checkout"
 
     def notifications
       backer = Backer.find params[:id]
@@ -15,7 +21,80 @@ module CatarsePaypalExpress::Payment
       render status: 404, nothing: true
     end
 
+    def pay
+      backer = current_user.backs.find params[:id]
+      begin
+        response = @@gateway.setup_purchase(backer.price_in_cents, {
+          ip: request.remote_ip,
+          return_url: payment_success_paypal_express_url(id: backer.id),
+          cancel_return_url: payment_cancel_paypal_express_url(id: backer.id),
+          currency_code: 'BRL',
+          description: t('paypal_description', scope: SCOPE, :project_name => backer.project.name, :value => backer.display_value),
+          notify_url: payment_notifications_paypal_express_url(id: backer.id)
+        })
+
+        backer.update_attribute :payment_method, 'PayPal'
+        backer.update_attribute :payment_token, response.token
+
+        if response.params['correlation_id']
+          backer.update_attribute :payment_id, response.params['correlation_id']
+        end
+
+        redirect_to @@gateway.redirect_url_for(response.token)
+      rescue Exception => e
+        Airbrake.notify({ :error_class => "Paypal Error", :error_message => "Paypal Error: #{e.inspect}", :parameters => params}) rescue nil
+        Rails.logger.info "-----> #{e.inspect}"
+        paypal_flash_error
+        return redirect_to main_app.new_project_backer_path(backer.project)
+      end
+    end
+
+    def success
+      backer = current_user.backs.find params[:id]
+      begin
+        details = @@gateway.details_for(backer.payment_token)
+        response = @@gateway.purchase(backer.price_in_cents, {
+          ip: request.remote_ip,
+          token: backer.payment_token,
+          payer_id: details.payer_id
+        })
+
+        if response.success?
+          backer.confirm!
+        end
+
+        if details.params['transaction_id'] 
+          backer.update_attribute :payment_id, details.params['transaction_id']
+        end
+
+        session[:thank_you_id] = backer.project.id
+        session[:_payment_token] = backer.payment_token
+
+        paypal_flash_success
+        redirect_to main_app.thank_you_path
+      rescue Exception => e
+        Airbrake.notify({ :error_class => "Paypal Error", :error_message => "Paypal Error: #{e.message}", :parameters => params}) rescue nil
+        Rails.logger.info "-----> #{e.inspect}"
+        paypal_flash_error
+        return redirect_to main_app.new_project_backer_path(backer.project)
+      end
+    end
+
+    def cancel
+      backer = current_user.backs.find params[:id]
+      flash[:failure] = t('paypal_cancel', scope: SCOPE)
+      redirect_to main_app.new_project_backer_path(backer.project)
+    end
+
   private
+
+    def paypal_flash_error
+      flash[:failure] = t('paypal_error', scope: SCOPE)
+    end
+
+    def paypal_flash_success
+      flash[:success] = t('success', scope: SCOPE)
+    end
 
     def setup_gateway
       if ::Configuration[:paypal_username] and ::Configuration[:paypal_password] and ::Configuration[:paypal_signature]
