@@ -50,9 +50,9 @@ And then execute:
 
 ## Troubleshooting in development environment
 
-remove the admin folder from test/dummy application to prevent a weird active admin bug:
+Remove the admin folder from test/dummy application to prevent a weird active admin bug:
 
-  $ rm -rf test/dummy/app/admin
+    $ rm -rf test/dummy/app/admin
 
 ## Contributing
 
