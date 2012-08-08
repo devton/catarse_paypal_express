@@ -1,0 +1,8 @@
+pt:
+  projects:
+    backers:
+      checkout:
+        paypal_cancel: "Seu pagamento no PayPal foi cancelado. Por favor, tente novamente."
+        paypal_description: "Apoio para o projeto %{project_name} no valor de %{value}"
+        paypal_error: "Ooops. Ocorreu um erro ao enviar seu pagamento para o PayPal. Por favor, tente novamente."
+        success: "Seu apoio foi realizado com sucesso. Muito obrigado!"
