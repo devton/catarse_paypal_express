@@ -23,9 +23,24 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
       response.status.should eq(404)
     end
 
+    it 'should create a payment_notification' do
+      success_payment_response = mock()
+      success_payment_response.stubs(:params).returns({ 'transaction_id' => '1234', "checkout_status" => "PaymentActionCompleted" })
+      success_payment_response.stubs(:success?).returns(true)
+      ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(success_payment_response)
+
+      backer = Factory(:backer, payment_id: '1234')
+      backer.payment_notifications.should be_empty
+
+      post :notifications, { id: backer.id, txn_id: 1234 , use_route: 'catarse_paypal_express' }
+      backer.reload
+
+      backer.payment_notifications.should_not be_empty
+    end
+
     it 'and the transaction ID match, should update the payment status if successful' do
       success_payment_response = mock()
-      success_payment_response.stubs(:params).returns({ 'transaction_id' => '1234' })
+      success_payment_response.stubs(:params).returns({ 'transaction_id' => '1234', "checkout_status" => "PaymentActionCompleted" })
       success_payment_response.stubs(:success?).returns(true)
       ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(success_payment_response)
       backer = Factory(:backer, payment_id: '1234', confirmed: false)
@@ -74,6 +89,17 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
         ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:setup_purchase).and_return(success_response)
       end
 
+      it 'should create a payment_notification' do
+        session[:user_id] = current_user.id
+        backer = Factory(:backer, user: current_user)
+
+        get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+        backer.reload
+
+        backer.payment_notifications.should_not be_empty
+        backer.payment_notifications.first.status == 'pending'
+      end
+
       it 'payment method, token and id should be persisted ' do
         session[:user_id] = current_user.id
         backer = Factory(:backer, user: current_user)
@@ -110,17 +136,19 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
 
         fake_success_details = mock()
         fake_success_details.stub(:payer_id).and_return('123')
-        fake_success_details.stub(:params).and_return({'transaction_id' => '12345'})
+        fake_success_details.stub(:params).and_return({'transaction_id' => '12345', "checkout_status" => "PaymentActionCompleted"})
         ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(fake_success_details)
       end
 
       it 'should update the backer and redirect to thank_you' do
         session[:user_id] = current_user.id
         backer = Factory(:backer, user: current_user, payment_token: 'TOKEN')
+        backer.payment_notifications.should be_empty
 
         get :success, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
         backer.reload
 
+        backer.payment_notifications.should_not be_empty
         backer.confirmed.should be_true
         backer.payment_id.should == '12345'
         session[:thank_you_id].should == backer.project.id

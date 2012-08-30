@@ -1,3 +1,5 @@
+require 'catarse_paypal_express/processors'
+
 module CatarsePaypalExpress::Payment
   class PaypalExpressController < ApplicationController
     skip_before_filter :verify_authenticity_token, :only => [:notifications]
@@ -8,11 +10,12 @@ module CatarsePaypalExpress::Payment
 
     SCOPE = "projects.backers.checkout"
 
+
     def notifications
       backer = Backer.find params[:id]
       response = @@gateway.details_for(backer.payment_token)
       if response.params['transaction_id'] == params['txn_id']
-        backer.confirm! if response.success?
+        build_notification(backer, response.params)
         render status: 200, nothing: true
       else
         render status: 404, nothing: true
@@ -35,6 +38,8 @@ module CatarsePaypalExpress::Payment
 
         backer.update_attribute :payment_method, 'PayPal'
         backer.update_attribute :payment_token, response.token
+
+        build_notification(backer, response.params)
 
         if response.params['correlation_id']
           backer.update_attribute :payment_id, response.params['correlation_id']
@@ -59,9 +64,7 @@ module CatarsePaypalExpress::Payment
           payer_id: details.payer_id
         })
 
-        if response.success?
-          backer.confirm!
-        end
+        build_notification(backer, details.params)
 
         if details.params['transaction_id'] 
           backer.update_attribute :payment_id, details.params['transaction_id']
@@ -87,6 +90,11 @@ module CatarsePaypalExpress::Payment
     end
 
   private
+
+    def build_notification(backer, data)
+      processor = CatarsePaypalExpress::Processors::Paypal.new
+      processor.process!(backer, data)
+    end
 
     def paypal_flash_error
       flash[:failure] = t('paypal_error', scope: SCOPE)

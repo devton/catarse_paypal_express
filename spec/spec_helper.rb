@@ -66,3 +66,10 @@ def paypal_setup_purchase_success_response
     "token"=>"EC-49X25168KR2556548", "Timestamp"=>"2012-07-23T00:24:21Z", "Ack"=>"Success", "CorrelationID"=>"dcb8596be51cd", 
     "Version"=>"62.0", "Build"=>"3332236", "Token"=>"EC-49X25168KR2556548" }
 end
+
+def paypal_details_response
+  {
+    "transaction_id" => "1234",
+    "checkout_status" => "PaymentActionCompleted"
+  }
+end
