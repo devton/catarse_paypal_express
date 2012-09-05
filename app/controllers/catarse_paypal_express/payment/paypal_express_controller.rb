@@ -10,6 +10,11 @@ module CatarsePaypalExpress::Payment
 
     SCOPE = "projects.backers.checkout"
 
+    layout :false
+
+    def review
+
+    end
 
     def notifications
       backer = Backer.find params[:id]
