@@ -6,7 +6,6 @@ module CatarsePaypalExpress
         status = data["checkout_status"] || "pending"
 
         notification = backer.payment_notifications.new({
-          status: status,
           extra_data: data
         })
 

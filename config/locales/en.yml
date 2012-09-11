@@ -1,6 +1,10 @@
 en:
   projects:
     backers:
+      review:
+        international:
+          section_title: 'You will be directed to the PayPal site to complete payment.'
+          button: 'Redirect to PayPal'
       checkout:
         paypal_cancel: "Your PayPal payment was canceled. Please try again."
         paypal_description: "Back project"
