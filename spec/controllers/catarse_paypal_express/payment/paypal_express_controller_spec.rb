@@ -97,7 +97,6 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
         backer.reload
 
         backer.payment_notifications.should_not be_empty
-        backer.payment_notifications.first.status == 'pending'
       end
 
       it 'payment method, token and id should be persisted ' do

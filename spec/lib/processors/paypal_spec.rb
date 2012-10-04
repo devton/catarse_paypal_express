@@ -10,11 +10,6 @@ describe CatarsePaypalExpress::Processors::Paypal do
       backer.payment_notifications.should_not be_empty
     end
 
-    it "should fill status based on checkout_status" do
-      subject.process!(backer, paypal_details_response)
-      backer.payment_notifications.first.status.should == 'PaymentActionCompleted'
-    end
-
     it "should fill extra_data with all response data" do
       subject.process!(backer, paypal_details_response)
       backer.payment_notifications.first.extra_data.should == paypal_details_response
