@@ -4,7 +4,6 @@ h3= t('projects.backers.review.international.section_title')
 
 #catarse_paypal_express_form
   = form_tag payment_pay_paypal_express_path(params[:id]) do
-    = check_box_tag 'accept'
-    = label_tag 'accept', t('accept_terms_html', :link => link_to(t('terms'), main_app.terms_path, :target => :_blank)), :class => 'inline'
     .bootstrap-twitter
-      = submit_tag t('projects.backers.review.international.button'), :disabled => true, :class => 'btn btn-primary btn-large'
+      .loader.hide= image_tag 'loading.gif'
+      = submit_tag t('projects.backers.review.international.button'), :class => 'btn btn-primary btn-large'
