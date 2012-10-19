@@ -38,11 +38,8 @@ Clone the repository:
 
 Add the catarse code into test/dummy:
 
-    $ git submodule add git://github.com/danielweinmann/catarse.git test/dummy
-
-Copy the Catarse's gems to Gemfile:
-
-    $ cat test/dummy/Gemfile >> Gemfile
+    $ git submodule init
+    $ git submodule update
 
 And then execute:
 
