@@ -43,6 +43,12 @@ RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :controller
 
   config.include Factory::Syntax::Methods
+
+  config.before(:each) do
+    CatarseMailchimp::API.stubs(:subscribe)
+    CatarseMailchimp::API.stubs(:unsubscribe)
+  end
+
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with :truncation
