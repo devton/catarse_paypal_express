@@ -25,7 +25,8 @@ module CatarsePaypalExpress::Payment
       else
         render status: 404, nothing: true
       end
-    rescue
+    rescue Exception => e
+      Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
       render status: 404, nothing: true
     end
 
