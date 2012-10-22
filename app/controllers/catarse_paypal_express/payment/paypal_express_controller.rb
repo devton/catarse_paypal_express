@@ -47,10 +47,6 @@ module CatarsePaypalExpress::Payment
 
         build_notification(backer, response.params)
 
-        if response.params['correlation_id']
-          backer.update_attribute :payment_id, response.params['correlation_id']
-        end
-
         redirect_to @@gateway.redirect_url_for(response.token)
       rescue Exception => e
         ::Airbrake.notify({ :error_class => "Paypal Error", :error_message => "Paypal Error: #{e.inspect}", :parameters => params}) rescue nil

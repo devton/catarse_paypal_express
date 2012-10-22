@@ -102,7 +102,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
           backer.payment_notifications.should_not be_empty
         end
 
-        it 'payment method, token and id should be persisted ' do
+        it 'payment method and token should be persisted ' do
           session[:user_id] = current_user.id
           backer = Factory(:backer, user: current_user)
 
@@ -111,7 +111,9 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
 
           backer.payment_method.should == 'PayPal'
           backer.payment_token.should == 'ABCD'
-          backer.payment_id.should == '123'
+
+          # The correlation id should not be stored in payment_id, which is only for transaction_id
+          backer.payment_id.should be_nil
 
           response.should be_redirect
         end
