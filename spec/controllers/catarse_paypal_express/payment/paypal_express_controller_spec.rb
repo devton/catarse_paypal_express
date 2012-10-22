@@ -133,18 +133,29 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
   end
 
   describe "GET success" do
+    let(:success_details){ {'transaction_id' => nil, "checkout_status" => "PaymentActionCompleted"} }
+    let(:fake_success_details) do
+      fake_success_details = mock()
+      fake_success_details.stub(:params).and_return(success_details)
+      fake_success_details
+    end
+
     context 'paypal returning to success route' do
 
       context 'when paypal purchase is ok' do
         before(:each) do
+          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for) do
+            # If we call the details_for before purchase the transaction_id will not be present
+            success_details.delete('transaction_id') unless success_details['transaction_id'] == '12345'
+            fake_success_details
+          end
           fake_success_purchase = mock()
           fake_success_purchase.stub(:success?).and_return(true)
-          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:purchase).and_return(fake_success_purchase)
-
-          fake_success_details = mock()
-          fake_success_details.stub(:payer_id).and_return('123')
-          fake_success_details.stub(:params).and_return({'transaction_id' => '12345', "checkout_status" => "PaymentActionCompleted"})
-          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(fake_success_details)
+          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:purchase) do
+            # only after the purchase command the transactio_id is set in the details_for
+            success_details['transaction_id'] = '12345' if success_details.include?('transaction_id')
+            fake_success_purchase
+          end
         end
 
         it 'should update the backer and redirect to thank_you' do
@@ -152,7 +163,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
           backer = Factory(:backer, user: current_user, payment_token: 'TOKEN')
           backer.payment_notifications.should be_empty
 
-          get :success, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+          get :success, { id: backer.id, PayerID: '123', locale: 'en', use_route: 'catarse_paypal_express' }
           backer.reload
 
           backer.payment_notifications.should_not be_empty
@@ -174,7 +185,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
           session[:user_id] = current_user.id
           backer = Factory(:backer, user: current_user)
 
-          get :success, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+          get :success, { id: backer.id, PayerID: '123', locale: 'en', use_route: 'catarse_paypal_express' }
 
           flash[:failure].should == I18n.t('paypal_error', scope: CatarsePaypalExpress::Payment::PaypalExpressController::SCOPE)
           response.should be_redirect

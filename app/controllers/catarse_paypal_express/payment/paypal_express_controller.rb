@@ -63,12 +63,14 @@ module CatarsePaypalExpress::Payment
     def success
       backer = current_user.backs.find params[:id]
       begin
-        details = @@gateway.details_for(backer.payment_token)
         response = @@gateway.purchase(backer.price_in_cents, {
           ip: request.remote_ip,
           token: backer.payment_token,
-          payer_id: details.payer_id
+          payer_id: params[:PayerID]
         })
+
+        # we must get the deatils after the purchase in order to get the transaction_id
+        details = @@gateway.details_for(backer.payment_token)
 
         build_notification(backer, details.params)
 
