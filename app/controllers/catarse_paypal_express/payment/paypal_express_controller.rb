@@ -16,6 +16,18 @@ module CatarsePaypalExpress::Payment
 
     end
 
+    def ipn
+      backer = Backer.where(:txn_id => params['txn_id']).first
+      notification = backer.payment_notifications.new({
+        extra_data: data
+      })
+      notification.save!
+      return render status: 200, nothing: true
+    rescue Exception => e
+      ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
+      return render status: 200, nothing: true
+    end
+
     def notifications
       backer = Backer.find params[:id]
       response = @@gateway.details_for(backer.payment_token)
