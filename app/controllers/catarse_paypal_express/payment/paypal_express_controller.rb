@@ -25,9 +25,9 @@ module CatarsePaypalExpress::Payment
         notification.save!
       end
       return render status: 200, nothing: true
-    #rescue Exception => e
-      #::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
-      #return render status: 200, nothing: true
+    rescue Exception => e
+      ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
+      return render status: 200, nothing: true
     end
 
     def notifications
