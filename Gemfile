@@ -19,6 +19,10 @@ gem 'catarse_moip', git: 'git://github.com/devton/catarse_moip.git'
 #gem 'catarse_moip', path: '../catarse_moip'
 gem 'moip', git: 'git://github.com/moiplabs/moip-ruby.git'
 
+gem 'sidekiq', '= 2.4.0'
+gem 'sinatra', require: false
+gem 'foreman'
+
 gem 'maxim-sexy_pg_constraints'
 gem 'dalli'
 gem 'draper'
@@ -54,7 +58,7 @@ gem 'kaminari'
 gem 'rails_autolink', '~> 1.0.7'
 
 # Uploads
-gem 'carrierwave', '= 0.5.8'
+gem 'carrierwave', '= 0.7.0'
 gem 'rmagick'
 gem 'fog'
 
