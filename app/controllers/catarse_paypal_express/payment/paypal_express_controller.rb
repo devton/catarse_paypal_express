@@ -23,6 +23,7 @@ module CatarsePaypalExpress::Payment
           extra_data: params
         })
         notification.save!
+        backer.update_attributes :payment_service_fee => params['mc_fee']
       end
       return render status: 200, nothing: true
     rescue Exception => e

@@ -9,8 +9,30 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
     Airbrake.stub(:notify).and_return({})
   end
 
+  subject{ response }
+
   let(:current_user) { Factory(:user) }
 
+  describe "POST ipn" do
+    let(:ipn_data){ {"mc_gross"=>"50.00", "protection_eligibility"=>"Eligible", "address_status"=>"unconfirmed", "payer_id"=>"S7Q8X88KMGX5S", "tax"=>"0.00", "address_street"=>"Rua Tatui, 40 ap 81\r\nJardins", "payment_date"=>"09:03:01 Nov 05, 2012 PST", "payment_status"=>"Completed", "charset"=>"windows-1252", "address_zip"=>"01409-010", "first_name"=>"Paula", "mc_fee"=>"3.30", "address_country_code"=>"BR", "address_name"=>"Paula Rizzo", "notify_version"=>"3.7", "custom"=>"", "payer_status"=>"verified", "address_country"=>"Brazil", "address_city"=>"Sao Paulo", "quantity"=>"1", "verify_sign"=>"ALBe4QrXe2sJhpq1rIN8JxSbK4RZA.Kfc5JlI9Jk4N1VQVTH5hPYOi2S", "payer_email"=>"paula.rizzo@gmail.com", "txn_id"=>"3R811766V4891372K", "payment_type"=>"instant", "last_name"=>"Rizzo", "address_state"=>"SP", "receiver_email"=>"financeiro@catarse.me", "payment_fee"=>"", "receiver_id"=>"BVUB4EVC7YCWL", "txn_type"=>"express_checkout", "item_name"=>"Back project", "mc_currency"=>"BRL", "item_number"=>"", "residence_country"=>"BR", "handling_amount"=>"0.00", "transaction_subject"=>"Back project", "payment_gross"=>"", "shipping"=>"0.00", "ipn_track_id"=>"5865649c8c27"} }
+    let(:backer){ Factory(:backer, :payment_id => ipn_data['txn_id'] ) }
+    before do
+      backer
+      post :ipn, ipn_data.merge({ use_route: 'catarse_paypal_express' })
+      backer.reload
+    end
+
+    it "should update backer's payment_service_fee" do
+      backer.payment_service_fee.to_f.should == ipn_data['mc_fee'].to_f
+    end
+
+    it "should create PaymentNotification for the backer" do
+      backer.payment_notifications.first.extra_data['txn_id'].should == ipn_data['txn_id']
+    end
+
+    its(:status){ should == 200 }
+  
+  end
   describe "POST notification" do
     context 'when receive a notification' do
       it 'and not found the backer, should return 404' do
