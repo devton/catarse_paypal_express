@@ -20,7 +20,7 @@ module CatarsePaypalExpress::Payment
       backer = Backer.where(:payment_id => params['txn_id']).first
       if backer
         notification = backer.payment_notifications.new({
-          extra_data: params
+          extra_data: JSON.parse(params.to_json.encode('utf-8'))
         })
         notification.save!
         backer.update_attributes :payment_service_fee => params['mc_fee']
