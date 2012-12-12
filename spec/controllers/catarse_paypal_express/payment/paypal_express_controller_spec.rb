@@ -28,6 +28,10 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
       backer.payment_service_fee.to_f.should == ipn_data['mc_fee'].to_f
     end
 
+    it "should update backer's payer_email" do
+      backer.payer_email.should == ipn_data['payer_email']
+    end
+
     it "should create PaymentNotification for the backer" do
       backer.payment_notifications.first.extra_data['txn_id'].should == ipn_data['txn_id']
     end

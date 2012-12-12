@@ -24,7 +24,10 @@ module CatarsePaypalExpress::Payment
           extra_data: JSON.parse(params.to_json.force_encoding(params['charset']).encode('utf-8'))
         })
         notification.save!
-        backer.update_attributes :payment_service_fee => params['mc_fee']
+        backer.update_attributes({
+          :payment_service_fee => params['mc_fee'],
+          :payer_email => params['payer_email']
+        })
       end
       return render status: 200, nothing: true
     rescue Exception => e
