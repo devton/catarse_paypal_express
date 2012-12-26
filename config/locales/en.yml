@@ -2,6 +2,7 @@ en:
   projects:
     backers:
       review:
+        paypal: 'PayPal'
         international:
           section_title: 'You will be directed to the PayPal site to complete payment.'
           user_document_label: 'CPF / CNPJ (only for Brazilians)'
