@@ -4,6 +4,7 @@ pt:
       review:
         international:
           section_title: 'Você será direcionado para o site do Paypal para completar o pagamento.'
+          user_document_label: 'CPF / CNPJ (somente números) opcional'
           button: 'Ir para o paypal'
       checkout:
         paypal_cancel: "Seu pagamento no PayPal foi cancelado. Por favor, tente novamente."
