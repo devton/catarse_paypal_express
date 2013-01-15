@@ -2,7 +2,7 @@ pt:
   projects:
     backers:
       review:
-        paypal: 'Pagamento internacional'
+        paypal: 'Pagamento internacional - PayPal'
         international:
           section_title: 'Você será direcionado para o site do Paypal para completar o pagamento.'
           user_document_label: 'CPF / CNPJ (somente números) opcional'
