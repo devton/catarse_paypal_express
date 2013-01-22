@@ -7,30 +7,33 @@ gemspec
 source :gemcutter
 source 'http://gems.github.com'
 
-gem 'rails', '3.2.7'
-gem 'rake', '0.9.2.2'
+gem 'rails', '3.2.11'
 
 gem 'sidekiq', '= 2.4.0'
 gem 'sinatra', require: false
 gem 'foreman'
-# Database and data related [Putting pg to the end because of a weird bug with Lion, pg and openssl]
-gem 'pg'
-gem 'foreigner'
-gem 'activerecord-postgresql-adapter'
+gem 'best_in_place'
 
-gem 'catarse_paypal_express', path: '.'
+gem 'state_machine', require: 'state_machine/core'
+
+# Database and data related
+gem 'pg'
+gem 'pg_search'
+gem 'postgres-copy'
+gem 'schema_plus'
+
+#gem 'catarse_paypal_express', git: 'git://github.com/devton/catarse_paypal_express.git'
+#gem 'catarse_paypal_express', path: '../catarse_paypal_express'
 gem 'catarse_moip', git: 'git://github.com/devton/catarse_moip.git'
 #gem 'catarse_moip', path: '../catarse_moip'
 gem 'moip', git: 'git://github.com/moiplabs/moip-ruby.git'
 
-gem 'maxim-sexy_pg_constraints'
-gem 'dalli'
 gem 'draper'
 
 # Frontend stuff
-gem 'jquery-rails'
 gem 'slim'
 gem 'slim-rails'
+gem 'initjs'
 
 # Authentication and Authorization
 gem 'omniauth', "~> 1.1.0"
@@ -41,7 +44,7 @@ gem 'omniauth-github', '~> 1.0.1'
 gem 'omniauth-linkedin', '~> 0.0.6'
 gem 'omniauth-yahoo', '~> 0.0.4'
 gem 'devise', '1.5.3'
-gem 'cancan'
+gem 'cancan', git: 'git://github.com/ryanb/cancan.git', branch: '2.0', ref: 'f1cebde51a87be149b4970a3287826bb63c0ac0b'
 
 
 # Error reporting
@@ -49,7 +52,7 @@ gem "airbrake"
 
 # Email marketing
 #gem 'mailchimp'
-gem 'catarse_mailchimp'
+gem 'catarse_mailchimp', git: 'git://github.com/devton/catarse_mailchimp'
 
 # HTML manipulation and formatting
 gem 'formtastic', "~> 2.1.1"
@@ -79,23 +82,18 @@ gem 'unicode'
 gem 'enumerate_it'
 gem 'httparty', '~> 0.6.1'
 gem "rack-timeout"
-gem 'tumblr-api'
 
 # Translations
 gem 'http_accept_language'
-gem 'web_translate_it'
 gem 'routing-filter' #, :git => 'git://github.com/svenfuchs/routing-filter.git'
 
 # Administration
-gem 'activeadmin', git: 'git://github.com/gregbell/active_admin.git'
 gem "meta_search", "1.1.3"
 
 # Payment
 gem 'activemerchant', '1.17.0', require: 'active_merchant'
 gem 'httpclient', '2.2.5'
-gem 'selenium-webdriver', '~> 2.25.0'
-gem 'bourbon'
-gem 'paypal-express', :require => 'paypal'
+gem 'selenium-webdriver'
 
 # Server
 gem 'thin'
@@ -109,12 +107,9 @@ group :assets do
 end
 
 group :test, :development do
-  gem 'annotate'
   gem 'launchy'
   gem 'database_cleaner'
-  gem 'steak', "~> 1.1.0"
   gem 'rspec-rails', "~> 2.10.0"
-  gem 'rcov', '= 0.9.11'
   gem 'mocha', '0.10.4'
   gem 'shoulda'
   gem 'factory_girl_rails', '1.7.0'
@@ -123,5 +118,4 @@ end
 
 group :development do
   gem 'mailcatcher'
-  gem 'ruby-debug19'
 end

@@ -1,27 +1,18 @@
 GIT
+  remote: git://github.com/devton/catarse_mailchimp
+  revision: a5be917969a1df6010fbbdea25a5c1407c6f8659
+  specs:
+    catarse_mailchimp (0.0.1)
+      mailchimp
+      supermodel
+
+GIT
   remote: git://github.com/devton/catarse_moip.git
   revision: 9f3e81569088d75cffc07ef37fca56c16987c775
   specs:
     catarse_moip (0.1.1)
       libxml-ruby (~> 2.3.3)
       rails (~> 3.2.6)
-
-GIT
-  remote: git://github.com/gregbell/active_admin.git
-  revision: 4e870e06e35145eab6a04b8e3591d2b67621583d
-  specs:
-    activeadmin (0.5.0)
-      arbre (>= 1.0.1)
-      bourbon (>= 1.0.0)
-      devise (>= 1.1.2)
-      fastercsv
-      formtastic (>= 2.0.0)
-      inherited_resources (>= 1.3.1)
-      jquery-rails (>= 1.0.0)
-      kaminari (>= 0.13.0)
-      meta_search (>= 0.9.2)
-      rails (>= 3.0.0)
-      sass (>= 3.1.0)
 
 GIT
   remote: git://github.com/moiplabs/moip-ruby.git
@@ -38,6 +29,14 @@ GIT
   specs:
     validation_reflection (1.0.0)
 
+GIT
+  remote: git://github.com/ryanb/cancan.git
+  revision: f1cebde51a87be149b4970a3287826bb63c0ac0b
+  ref: f1cebde51a87be149b4970a3287826bb63c0ac0b
+  branch: 2.0
+  specs:
+    cancan (2.0.0.alpha)
+
 PATH
   remote: .
   specs:
@@ -51,63 +50,55 @@ GEM
   remote: http://gems.github.com/
   specs:
     RedCloth (4.2.9)
-    actionmailer (3.2.7)
-      actionpack (= 3.2.7)
+    actionmailer (3.2.11)
+      actionpack (= 3.2.11)
       mail (~> 2.4.4)
-    actionpack (3.2.7)
-      activemodel (= 3.2.7)
-      activesupport (= 3.2.7)
+    actionpack (3.2.11)
+      activemodel (= 3.2.11)
+      activesupport (= 3.2.11)
       builder (~> 3.0.0)
       erubis (~> 2.7.0)
       journey (~> 1.0.4)
       rack (~> 1.4.0)
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
-      sprockets (~> 2.1.3)
+      sprockets (~> 2.2.1)
     activemerchant (1.17.0)
       activesupport (>= 2.3.11)
       braintree (>= 2.0.0)
       builder (>= 2.0.0)
       json (>= 1.5.1)
-    activemodel (3.2.7)
-      activesupport (= 3.2.7)
+    activemodel (3.2.11)
+      activesupport (= 3.2.11)
       builder (~> 3.0.0)
-    activerecord (3.2.7)
-      activemodel (= 3.2.7)
-      activesupport (= 3.2.7)
+    activerecord (3.2.11)
+      activemodel (= 3.2.11)
+      activesupport (= 3.2.11)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
-    activerecord-postgresql-adapter (0.0.1)
-      pg
-    activeresource (3.2.7)
-      activemodel (= 3.2.7)
-      activesupport (= 3.2.7)
-    activesupport (3.2.7)
+    activeresource (3.2.11)
+      activemodel (= 3.2.11)
+      activesupport (= 3.2.11)
+    activesupport (3.2.11)
       i18n (~> 0.6)
       multi_json (~> 1.0)
     addressable (2.3.2)
     airbrake (3.1.5)
       builder
       girl_friday
-    annotate (2.5.0)
-      rake
-    arbre (1.0.1)
-      activesupport (>= 3.0.0)
-    archive-tar-minitar (0.5.2)
     arel (3.0.2)
-    attr_required (0.0.5)
     auto_html (1.4.2)
       RedCloth
       redcarpet
       rinku
       tag_helper
     bcrypt-ruby (3.0.1)
-    bourbon (2.1.1)
-      sass (>= 3.1)
+    best_in_place (2.0.3)
+      jquery-rails
+      rails (~> 3.1)
     braintree (2.18.0)
     brcep (3.3.0)
-    builder (3.0.3)
-    cancan (1.6.8)
+    builder (3.0.4)
     capybara (1.1.2)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -118,9 +109,6 @@ GEM
     carrierwave (0.7.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
-    catarse_mailchimp (0.0.1)
-      mailchimp
-      supermodel
     celluloid (0.12.3)
       facter (>= 1.6.12)
       timers (>= 1.0.0)
@@ -134,7 +122,6 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.3.3)
-    columnize (0.3.6)
     compass (0.12.2)
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
@@ -147,7 +134,6 @@ GEM
     crack (0.1.8)
     curb (0.7.18)
     daemons (1.1.9)
-    dalli (2.3.0)
     database_cleaner (0.8.0)
     devise (1.5.3)
       bcrypt-ruby (~> 3.0)
@@ -172,7 +158,6 @@ GEM
       railties (>= 3.0.0)
     faraday (0.8.4)
       multipart-post (~> 1.1)
-    fastercsv (1.5.5)
     feedzirra (0.0.31)
       activesupport (>= 3.0.8)
       builder (~> 3.0.0)
@@ -194,8 +179,6 @@ GEM
       net-ssh (>= 2.1.4)
       nokogiri (>= 1.4.4)
       ruby-hmac
-    foreigner (1.2.1)
-      activerecord (>= 3.0.0)
     foreman (0.60.2)
       thor (>= 0.13.6)
     formatador (0.2.3)
@@ -220,11 +203,13 @@ GEM
     inherited_resources (1.3.1)
       has_scope (~> 0.5.0)
       responders (~> 0.6)
+    initjs (0.1.2)
+      rails (~> 3.1)
     journey (1.0.4)
-    jquery-rails (2.1.3)
-      railties (>= 3.1.0, < 5.0)
-      thor (~> 0.14)
-    json (1.7.3)
+    jquery-rails (2.2.0)
+      railties (>= 3.0, < 5.0)
+      thor (>= 0.14, < 2.0)
+    json (1.7.6)
     json_pure (1.7.5)
     jwt (0.1.5)
       multi_json (>= 1.0)
@@ -236,8 +221,6 @@ GEM
     libwebsocket (0.1.5)
       addressable
     libxml-ruby (2.3.3)
-    linecache19 (0.5.12)
-      ruby_core_source (>= 0.1.4)
     loofah (1.0.0)
       nokogiri (>= 1.3.3)
     mail (2.4.4)
@@ -255,7 +238,6 @@ GEM
       thin (~> 1.5.0)
     mailchimp (0.0.7.alpha)
       httparty
-    maxim-sexy_pg_constraints (0.1.3)
     memoist (0.2.0)
     meta_search (1.1.3)
       actionpack (~> 3.1)
@@ -266,7 +248,7 @@ GEM
     mime-types (1.19)
     mocha (0.10.4)
       metaclass (~> 0.0.1)
-    multi_json (1.3.6)
+    multi_json (1.5.0)
     multipart-post (1.1.5)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
@@ -306,16 +288,22 @@ GEM
     on_the_spot (1.0.1)
       json_pure (>= 1.4.6)
     orm_adapter (0.0.7)
-    paypal-express (0.5.1)
-      activesupport (>= 2.3)
-      attr_required (>= 0.0.5)
-      i18n
-      restclient_with_cert
     pg (0.14.1)
+    pg_search (0.5.7)
+      activerecord (>= 3)
+      activesupport (>= 3)
     polyamorous (0.5.0)
       activerecord (~> 3.0)
     polyglot (0.3.3)
-    rack (1.4.1)
+    postgres-copy (0.5.4)
+      activerecord
+      activerecord (>= 3.0.0)
+      pg
+      rails
+      rake
+      rspec (~> 2.6)
+      rspec-core (~> 2.6)
+    rack (1.4.4)
     rack-cache (1.2)
       rack (>= 0.4)
     rack-openid (1.3.1)
@@ -328,25 +316,24 @@ GEM
     rack-test (0.6.2)
       rack (>= 1.0)
     rack-timeout (0.0.3)
-    rails (3.2.7)
-      actionmailer (= 3.2.7)
-      actionpack (= 3.2.7)
-      activerecord (= 3.2.7)
-      activeresource (= 3.2.7)
-      activesupport (= 3.2.7)
+    rails (3.2.11)
+      actionmailer (= 3.2.11)
+      actionpack (= 3.2.11)
+      activerecord (= 3.2.11)
+      activeresource (= 3.2.11)
+      activesupport (= 3.2.11)
       bundler (~> 1.0)
-      railties (= 3.2.7)
+      railties (= 3.2.11)
     rails_autolink (1.0.9)
       rails (~> 3.1)
-    railties (3.2.7)
-      actionpack (= 3.2.7)
-      activesupport (= 3.2.7)
+    railties (3.2.11)
+      actionpack (= 3.2.11)
+      activesupport (= 3.2.11)
       rack-ssl (~> 1.3.2)
       rake (>= 0.8.7)
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
-    rake (0.9.2.2)
-    rcov (0.9.11)
+    rake (10.0.3)
     rdoc (3.12)
       json (~> 1.4)
     redcarpet (2.2.1)
@@ -355,10 +342,6 @@ GEM
       redis (~> 3.0.0)
     responders (0.9.3)
       railties (~> 3.1)
-    rest-client (1.6.7)
-      mime-types (>= 1.16)
-    restclient_with_cert (0.0.8)
-      rest-client (>= 1.6)
     rinku (1.7.2)
     rmagick (2.13.1)
     routing-filter (0.3.1)
@@ -376,18 +359,8 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.10.0)
-    ruby-debug-base19 (0.11.25)
-      columnize (>= 0.3.1)
-      linecache19 (>= 0.5.11)
-      ruby_core_source (>= 0.1.4)
-    ruby-debug19 (0.11.6)
-      columnize (>= 0.3.1)
-      linecache19 (>= 0.5.11)
-      ruby-debug-base19 (>= 0.11.19)
     ruby-hmac (0.4.0)
     ruby-openid (2.2.1)
-    ruby_core_source (0.1.5)
-      archive-tar-minitar (>= 0.5.2)
     rubyzip (0.9.9)
     sass (3.2.1)
     sass-rails (3.2.5)
@@ -396,6 +369,9 @@ GEM
       tilt (~> 1.3)
     sax-machine (0.0.20)
       nokogiri (> 0.0.0)
+    schema_plus (1.0.0)
+      rails (>= 3.2)
+      valuable
     selenium-webdriver (2.25.0)
       childprocess (>= 0.2.5)
       libwebsocket (~> 0.1.3)
@@ -431,13 +407,13 @@ GEM
     spectator-validates_email (0.1.1)
       actionpack (>= 3.0.0)
       activemodel (>= 3.0.0)
-    sprockets (2.1.3)
+    sprockets (2.2.2)
       hike (~> 1.2)
+      multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
     sqlite3 (1.3.6)
-    steak (1.1.0)
-      rspec (>= 1.3)
+    state_machine (1.1.2)
     supermodel (0.1.4)
       activemodel (>= 3.0.0.beta)
     tag_helper (0.0.3)
@@ -449,18 +425,15 @@ GEM
     thor (0.16.0)
     tilt (1.3.3)
     timers (1.0.1)
-    treetop (1.4.11)
+    treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
-    trollop (1.16.2)
-    tumblr-api (0.1.4)
-      activesupport
-      httparty
-    tzinfo (0.3.33)
+    tzinfo (0.3.35)
     uglifier (1.3.0)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
     unicode (0.4.3)
+    valuable (0.9.6)
     vimeo (1.5.3)
       httparty (>= 0.4.5)
       httpclient (>= 2.1.5.2)
@@ -469,10 +442,6 @@ GEM
       oauth (>= 0.4.3)
     warden (1.2.1)
       rack (>= 1.0)
-    web_translate_it (2.0.4)
-      json
-      multipart-post (~> 1.1.3)
-      trollop (~> 1.16.2)
     weekdays (1.0.2)
     wirble (0.1.3)
     xpath (0.1.4)
@@ -483,24 +452,20 @@ PLATFORMS
 
 DEPENDENCIES
   RedCloth
-  activeadmin!
   activemerchant (= 1.17.0)
-  activerecord-postgresql-adapter
   airbrake
-  annotate
   auto_html (= 1.4.2)
-  bourbon
+  best_in_place
   brcep
-  cancan
+  cancan!
   capybara (>= 1.0.1)
   carrierwave (~> 0.7.0)
-  catarse_mailchimp
+  catarse_mailchimp!
   catarse_moip!
   catarse_paypal_express!
   coffee-rails (~> 3.2.2)
   compass-960-plugin (~> 0.10.4)
   compass-rails (~> 1.0.2)
-  dalli
   database_cleaner
   devise (= 1.5.3)
   draper
@@ -508,7 +473,6 @@ DEPENDENCIES
   factory_girl_rails (= 1.7.0)
   feedzirra
   fog
-  foreigner
   foreman
   formtastic (~> 2.1.1)
   has_scope
@@ -517,11 +481,10 @@ DEPENDENCIES
   httparty (~> 0.6.1)
   httpclient (= 2.2.5)
   inherited_resources (= 1.3.1)
-  jquery-rails
+  initjs
   kaminari
   launchy
   mailcatcher
-  maxim-sexy_pg_constraints
   memoist (~> 0.2.0)
   meta_search (= 1.1.3)
   mocha (= 0.10.4)
@@ -534,31 +497,28 @@ DEPENDENCIES
   omniauth-twitter (~> 0.0.12)
   omniauth-yahoo (~> 0.0.4)
   on_the_spot
-  paypal-express
   pg
+  pg_search
+  postgres-copy
   rack-timeout
-  rails (= 3.2.7)
+  rails (= 3.2.11)
   rails_autolink (~> 1.0.7)
-  rake (= 0.9.2.2)
-  rcov (= 0.9.11)
   rmagick
   routing-filter
   rspec-rails (~> 2.10.0)
-  ruby-debug19
   sass-rails (~> 3.2.5)
-  selenium-webdriver (~> 2.25.0)
+  schema_plus
+  selenium-webdriver
   shoulda
   sidekiq (= 2.4.0)
   sinatra
   slim
   slim-rails
   spectator-validates_email
-  steak (~> 1.1.0)
+  state_machine
   thin
-  tumblr-api
   uglifier (>= 1.0.3)
   unicode
   validation_reflection!
-  web_translate_it
   weekdays
   wirble
