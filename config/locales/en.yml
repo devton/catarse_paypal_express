@@ -9,6 +9,6 @@ en:
           button: 'Redirect to PayPal'
       checkout:
         paypal_cancel: "Your PayPal payment was canceled. Please try again."
-        paypal_description: "Back project"
+        paypal_description: "Back project %{project_name} with %{value} (BRL)"
         paypal_error: "Ooops. There was an error while sending your payment to PayPal. Please try again."
         success: "Your back was successfully made. Thanks a lot!"
