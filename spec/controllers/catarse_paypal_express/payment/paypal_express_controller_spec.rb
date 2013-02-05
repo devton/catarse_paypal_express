@@ -199,10 +199,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
           backer.payment_notifications.should_not be_empty
           backer.confirmed.should be_true
           backer.payment_id.should == '12345'
-          session[:thank_you_id].should == backer.project.id
-          session[:_payment_token].should == backer.payment_token
-
-          response.should redirect_to('/thank_you')
+          response.should redirect_to("/projects/#{backer.project.id}/backers/#{backer.id}/thank_you")
         end
       end
 

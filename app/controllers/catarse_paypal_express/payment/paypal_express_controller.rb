@@ -78,7 +78,7 @@ module CatarsePaypalExpress::Payment
     def success
       backer = current_user.backs.find params[:id]
       begin
-        response = @@gateway.purchase(backer.price_in_cents, {
+        @@gateway.purchase(backer.price_in_cents, {
           ip: request.remote_ip,
           token: backer.payment_token,
           payer_id: params[:PayerID]
@@ -92,12 +92,8 @@ module CatarsePaypalExpress::Payment
         if details.params['transaction_id'] 
           backer.update_attribute :payment_id, details.params['transaction_id']
         end
-
-        session[:thank_you_id] = backer.project.id
-        session[:_payment_token] = backer.payment_token
-
         paypal_flash_success
-        redirect_to main_app.thank_you_path
+        redirect_to main_app.thank_you_project_backer_path(project_id: backer.project.id, id: backer.id)
       rescue Exception => e
         ::Airbrake.notify({ :error_class => "Paypal Error", :error_message => "Paypal Error: #{e.message}", :parameters => params}) rescue nil
         Rails.logger.info "-----> #{e.inspect}"
