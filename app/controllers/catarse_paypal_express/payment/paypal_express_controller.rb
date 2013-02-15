@@ -93,7 +93,7 @@ module CatarsePaypalExpress::Payment
           backer.update_attribute :payment_id, details.params['transaction_id']
         end
         paypal_flash_success
-        redirect_to main_app.thank_you_project_backer_path(project_id: backer.project.id, id: backer.id)
+        redirect_to main_app.project_backer_path(project_id: backer.project.id, id: backer.id)
       rescue Exception => e
         ::Airbrake.notify({ :error_class => "Paypal Error", :error_message => "Paypal Error: #{e.message}", :parameters => params}) rescue nil
         Rails.logger.info "-----> #{e.inspect}"
