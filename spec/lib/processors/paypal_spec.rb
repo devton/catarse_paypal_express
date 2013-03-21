@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe CatarsePaypalExpress::Processors::Paypal do
   context "process paypal details_for response" do
-    let(:backer) { Factory(:backer, confirmed: false) }
+    let(:backer) { FactoryGirl.create(:backer, confirmed: false) }
 
     it "should create a new payment_notifications for backer" do
       backer.payment_notifications.should be_empty

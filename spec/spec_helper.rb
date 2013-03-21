@@ -42,7 +42,7 @@ RSpec.configure do |config|
 
   config.include Devise::TestHelpers, :type => :controller
 
-  config.include Factory::Syntax::Methods
+  config.include FactoryGirl::Syntax::Methods
 
   config.before(:each) do
     CatarseMailchimp::API.stubs(:subscribe)

@@ -9,15 +9,16 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
     Configuration.create!(name: "paypal_signature", value: "AeL-u-Ox.N6Jennvu1G3BcdiTJxQAWdQcjdpLTB9ZaP0-Xuf-U0EQtnS")
     ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return({})
     Airbrake.stub(:notify).and_return({})
+    controller.stub(:current_user).and_return(current_user)
   end
 
   subject{ response }
-
-  let(:current_user) { Factory(:user) }
+  let(:current_user) { FactoryGirl.create(:user) }
 
   describe "POST ipn" do
     let(:ipn_data){ {"mc_gross"=>"50.00", "protection_eligibility"=>"Eligible", "address_status"=>"unconfirmed", "payer_id"=>"S7Q8X88KMGX5S", "tax"=>"0.00", "address_street"=>"Rua Tatui, 40 ap 81\r\nJardins", "payment_date"=>"09:03:01 Nov 05, 2012 PST", "payment_status"=>"Completed", "charset"=>"windows-1252", "address_zip"=>"01409-010", "first_name"=>"Paula", "mc_fee"=>"3.30", "address_country_code"=>"BR", "address_name"=>"Paula Rizzo", "notify_version"=>"3.7", "custom"=>"", "payer_status"=>"verified", "address_country"=>"Brazil", "address_city"=>"Sao Paulo", "quantity"=>"1", "verify_sign"=>"ALBe4QrXe2sJhpq1rIN8JxSbK4RZA.Kfc5JlI9Jk4N1VQVTH5hPYOi2S", "payer_email"=>"paula.rizzo@gmail.com", "txn_id"=>"3R811766V4891372K", "payment_type"=>"instant", "last_name"=>"Rizzo", "address_state"=>"SP", "receiver_email"=>"financeiro@catarse.me", "payment_fee"=>"", "receiver_id"=>"BVUB4EVC7YCWL", "txn_type"=>"express_checkout", "item_name"=>"Back project", "mc_currency"=>"BRL", "item_number"=>"", "residence_country"=>"BR", "handling_amount"=>"0.00", "transaction_subject"=>"Back project", "payment_gross"=>"", "shipping"=>"0.00", "ipn_track_id"=>"5865649c8c27"} }
-    let(:backer){ Factory(:backer, :payment_id => ipn_data['txn_id'] ) }
+    let(:backer){ FactoryGirl.create(:backer, :payment_id => ipn_data['txn_id'] ) }
+
     before do
       backer
       post :ipn, ipn_data.merge({ use_route: 'catarse_paypal_express' })
@@ -37,8 +38,8 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
     end
 
     its(:status){ should == 200 }
-  
   end
+  
   describe "POST notification" do
     context 'when receive a notification' do
       it 'and not found the backer, should return 404' do
@@ -47,7 +48,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
       end
 
       it 'and the transaction ID not match, should return 404' do
-        backer = Factory(:backer, payment_id: '1234')
+        backer = FactoryGirl.create(:backer, payment_id: '1234')
         post :notifications, { id: backer.id, txn_id: 123, use_route: 'catarse_paypal_express' }
         response.status.should eq(404)
       end
@@ -58,7 +59,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
         success_payment_response.stubs(:success?).returns(true)
         ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(success_payment_response)
 
-        backer = Factory(:backer, payment_id: '1234')
+        backer = FactoryGirl.create(:backer, payment_id: '1234')
         backer.payment_notifications.should be_empty
 
         post :notifications, { id: backer.id, txn_id: 1234 , use_route: 'catarse_paypal_express' }
@@ -72,7 +73,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
         success_payment_response.stubs(:params).returns({ 'transaction_id' => '1234', "checkout_status" => "PaymentActionCompleted" })
         success_payment_response.stubs(:success?).returns(true)
         ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(success_payment_response)
-        backer = Factory(:backer, payment_id: '1234', confirmed: false)
+        backer = FactoryGirl.create(:backer, payment_id: '1234', confirmed: false)
 
         post :notifications, { id: backer.id, txn_id: 1234, use_route: 'catarse_paypal_express' }
 
@@ -84,67 +85,54 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
   end
 
   describe "GET pay" do
-    context 'setup purchase' do
-      context 'when have some failures' do
-        it 'user not logged in, should redirect' do
-          pending 'problems with external application routes'
-          #get :pay, {locale: 'en', use_route: 'catarse_paypal_express' }
-          #response.status.should eq(302)
-        end
-
-        it 'backer not belongs to current_user should 404' do
-          backer = Factory(:backer)
-          session[:user_id] = current_user.id
-
-          lambda { 
-            get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-          }.should raise_exception ActiveRecord::RecordNotFound
-        end
-
-        it 'raise a exepction because invalid data and should be redirect and set the flash message' do
-          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:setup_purchase).and_raise(StandardError)
-          session[:user_id] = current_user.id
-          backer = Factory(:backer, user: current_user)
-
+    context 'when have some failures' do
+      it 'backer not belongs to current_user should 404' do
+        backer = FactoryGirl.create(:backer)
+        lambda { 
           get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-          flash[:failure].should == I18n.t('paypal_error', scope: CatarsePaypalExpress::Payment::PaypalExpressController::SCOPE)
-          response.should be_redirect
-        end
+        }.should raise_exception ActiveRecord::RecordNotFound
       end
 
-      context 'when successul' do
-        before do
-          success_response = mock()
-          success_response.stub(:token).and_return('ABCD')
-          success_response.stub(:params).and_return({ 'correlation_id' => '123' })
-          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:setup_purchase).and_return(success_response)
-        end
+      it 'raise a exepction because invalid data and should be redirect and set the flash message' do
+        ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:setup_purchase).and_raise(StandardError)
+        backer = FactoryGirl.create(:backer, user: current_user)
 
-        it 'should create a payment_notification' do
-          session[:user_id] = current_user.id
-          backer = Factory(:backer, user: current_user)
+        get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+        flash[:failure].should == I18n.t('paypal_error', scope: CatarsePaypalExpress::Payment::PaypalExpressController::SCOPE)
+        response.should be_redirect
+      end
+    end
 
-          get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-          backer.reload
+    context 'when successul' do
+      before do
+        success_response = mock()
+        success_response.stub(:token).and_return('ABCD')
+        success_response.stub(:params).and_return({ 'correlation_id' => '123' })
+        ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:setup_purchase).and_return(success_response)
+      end
 
-          backer.payment_notifications.should_not be_empty
-        end
+      it 'should create a payment_notification' do
+        backer = FactoryGirl.create(:backer, user: current_user)
 
-        it 'payment method and token should be persisted ' do
-          session[:user_id] = current_user.id
-          backer = Factory(:backer, user: current_user)
+        get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+        backer.reload
 
-          get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-          backer.reload
+        backer.payment_notifications.should_not be_empty
+      end
 
-          backer.payment_method.should == 'PayPal'
-          backer.payment_token.should == 'ABCD'
+      it 'payment method and token should be persisted ' do
+        backer = FactoryGirl.create(:backer, user: current_user)
 
-          # The correlation id should not be stored in payment_id, which is only for transaction_id
-          backer.payment_id.should be_nil
+        get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+        backer.reload
 
-          response.should be_redirect
-        end
+        backer.payment_method.should == 'PayPal'
+        backer.payment_token.should == 'ABCD'
+
+        # The correlation id should not be stored in payment_id, which is only for transaction_id
+        backer.payment_id.should be_nil
+
+        response.should be_redirect
       end
     end
   end
@@ -152,8 +140,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
   describe "GET cancel" do
     context 'when cancel the paypal purchase' do
       it 'should show for user the flash message' do
-        session[:user_id] = current_user.id
-        backer = Factory(:backer, user: current_user, payment_token: 'TOKEN')
+        backer = FactoryGirl.create(:backer, user: current_user, payment_token: 'TOKEN')
 
         get :cancel, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
         flash[:failure].should == I18n.t('paypal_cancel', scope: CatarsePaypalExpress::Payment::PaypalExpressController::SCOPE)
@@ -189,8 +176,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
         end
 
         it 'should update the backer and redirect to thank_you' do
-          session[:user_id] = current_user.id
-          backer = Factory(:backer, user: current_user, payment_token: 'TOKEN')
+          backer = FactoryGirl.create(:backer, user: current_user, payment_token: 'TOKEN')
           backer.payment_notifications.should be_empty
 
           get :success, { id: backer.id, PayerID: '123', locale: 'en', use_route: 'catarse_paypal_express' }
@@ -209,8 +195,7 @@ describe CatarsePaypalExpress::Payment::PaypalExpressController do
         end
 
         it 'should be redirect and show a flash message' do
-          session[:user_id] = current_user.id
-          backer = Factory(:backer, user: current_user)
+          backer = FactoryGirl.create(:backer, user: current_user)
 
           get :success, { id: backer.id, PayerID: '123', locale: 'en', use_route: 'catarse_paypal_express' }
 
