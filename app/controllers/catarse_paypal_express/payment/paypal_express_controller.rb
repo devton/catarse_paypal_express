@@ -20,10 +20,14 @@ module CatarsePaypalExpress::Payment
     def ipn
       backer = Backer.where(:payment_id => params['txn_id']).first
       if backer
-        notification = backer.payment_notifications.new({
-          extra_data: JSON.parse(params.to_json.force_encoding(params['charset']).encode('utf-8'))
-        })
-        notification.save!
+        begin
+          notification = backer.payment_notifications.new({
+            extra_data: JSON.parse(params.to_json.force_encoding(params['charset']).encode('utf-8'))
+          })
+          notification.save!
+        rescue Exception => e
+          ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
+        end
         backer.update_attributes({
           :payment_service_fee => params['mc_fee'],
           :payer_email => params['payer_email']
@@ -32,7 +36,7 @@ module CatarsePaypalExpress::Payment
       return render status: 200, nothing: true
     rescue Exception => e
       ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
-      return render status: 200, nothing: true
+      return render status: 500, text: e.inspect
     end
 
     def notifications
