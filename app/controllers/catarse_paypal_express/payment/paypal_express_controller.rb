@@ -26,16 +26,19 @@ module CatarsePaypalExpress::Payment
           })
           notification.save!
         rescue Exception => e
-          ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
+          ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params})
         end
         backer.update_attributes({
           :payment_service_fee => params['mc_fee'],
           :payer_email => params['payer_email']
         })
+      else
+        ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Could not find backer error: #{e.inspect}", :parameters => params})
+        return render status: 500, text: e.inspect
       end
       return render status: 200, nothing: true
     rescue Exception => e
-      ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
+      ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params})
       return render status: 500, text: e.inspect
     end
 
