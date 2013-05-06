@@ -95,6 +95,8 @@ module CatarsePaypalExpress::Payment
         details = @@gateway.details_for(backer.payment_token)
 
         build_notification(backer, details.params)
+        
+        backer.waiting if backer.pending?
 
         if details.params['transaction_id'] 
           backer.update_attribute :payment_id, details.params['transaction_id']
