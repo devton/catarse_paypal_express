@@ -76,6 +76,15 @@ end
 def paypal_details_response
   {
     "transaction_id" => "1234",
-    "checkout_status" => "PaymentActionCompleted"
+    "checkout_status" => "PaymentActionCompleted",
+    "payment_status" => 'Completed'
+  }
+end
+
+def paypal_details_response_refunded
+  {
+    "transaction_id" => "1234",
+    "checkout_status" => "PaymentActionCompleted",
+    "payment_status" => 'Refunded'
   }
 end

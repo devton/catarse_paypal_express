@@ -12,6 +12,7 @@ module CatarsePaypalExpress
         notification.save!
 
         backer.confirm! if success_payment?(status)
+        backer.refund! if data["payment_status"].downcase == 'refunded'
       end
 
       protected

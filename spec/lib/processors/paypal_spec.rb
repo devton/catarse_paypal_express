@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe CatarsePaypalExpress::Processors::Paypal do
   context "process paypal details_for response" do
-    let(:backer) { FactoryGirl.create(:backer, confirmed: false) }
+    let(:backer) { FactoryGirl.create(:backer) }
 
     it "should create a new payment_notifications for backer" do
       backer.payment_notifications.should be_empty
@@ -17,12 +17,17 @@ describe CatarsePaypalExpress::Processors::Paypal do
 
     it "should confirm backer when checkout status is completed" do
       subject.process!(backer, paypal_details_response)
-      backer.confirmed.should be_true
+      backer.confirmed?.should be_true
     end
+    
+    it "should refund backer when payment status is Refunded" do
+      subject.process!(backer, paypal_details_response_refunded)
+      backer.refunded?.should be_true
+    end    
 
     it "should not confirm when checkout status is not completed" do
       subject.process!(backer, paypal_details_response.merge!({"checkout_status" => "just_another_status"}) )
-      backer.confirmed.should be_false
+      backer.confirmed?.should be_false
     end
   end
 end
