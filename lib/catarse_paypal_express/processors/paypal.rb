@@ -11,10 +11,18 @@ module CatarsePaypalExpress
 
         notification.save!
 
-        backer.confirm! if success_payment?(status)
-        backer.refund! if data["payment_status"].downcase == 'refunded'
-        backer.cancel! if data["payment_status"].downcase == 'canceled_reversal'
-        backer.pendent! if data["payment_status"].downcase == 'expired' || data["payment_status"].downcase == 'denied'
+        if success_payment?(status)
+          backer.confirm! 
+        elsif data["payment_status"]
+          case data["payment_status"].downcase
+          when 'refunded'
+          backer.refund!
+          when 'canceled_reversal'
+          backer.cancel!
+          when 'expired', 'denied'
+          backer.pendent! 
+          end
+        end
       end
 
       protected
