@@ -26,7 +26,7 @@ module CatarsePaypalExpress::Payment
           })
           notification.save!
         rescue Exception => e
-          ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params})
+          Rails.logger.info "-----> #{e.inspect}"
         end
         backer.update_attributes({
           :payment_service_fee => params['mc_fee'],
