@@ -33,12 +33,10 @@ module CatarsePaypalExpress::Payment
           :payer_email => params['payer_email']
         })
       else
-        ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Could not find backer error: #{e.inspect}", :parameters => params})
         return render status: 500, text: e.inspect
       end
       return render status: 200, nothing: true
     rescue Exception => e
-      ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params})
       return render status: 500, text: e.inspect
     end
 
@@ -52,7 +50,6 @@ module CatarsePaypalExpress::Payment
         render status: 404, nothing: true
       end
     rescue Exception => e
-      ::Airbrake.notify({ :error_class => "Paypal Notification Error", :error_message => "Paypal Notification Error: #{e.inspect}", :parameters => params}) rescue nil
       render status: 404, nothing: true
     end
 
@@ -75,7 +72,6 @@ module CatarsePaypalExpress::Payment
 
         redirect_to @@gateway.redirect_url_for(response.token)
       rescue Exception => e
-        ::Airbrake.notify({ :error_class => "Paypal Error", :error_message => "Paypal Error: #{e.inspect}", :parameters => params}) rescue nil
         Rails.logger.info "-----> #{e.inspect}"
         paypal_flash_error
         return redirect_to main_app.new_project_backer_path(backer.project)
@@ -104,7 +100,6 @@ module CatarsePaypalExpress::Payment
         paypal_flash_success
         redirect_to main_app.project_backer_path(project_id: backer.project.id, id: backer.id)
       rescue Exception => e
-        ::Airbrake.notify({ :error_class => "Paypal Error", :error_message => "Paypal Error: #{e.message}", :parameters => params}) rescue nil
         Rails.logger.info "-----> #{e.inspect}"
         paypal_flash_error
         return redirect_to main_app.new_project_backer_path(backer.project)
