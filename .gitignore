@@ -5,5 +5,3 @@ test/dummy/db/*.sqlite3
 test/dummy/log/*.log
 test/dummy/tmp/
 test/dummy/.sass-cache
-test/dummy/
-catarse_paypal_express-0.0.1.gem
