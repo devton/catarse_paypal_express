@@ -28,7 +28,9 @@ RSpec.configure do |config|
   # Include Engine routes (needed for Controller specs)
   config.include CatarsePaypalExpress::Engine.routes.url_helpers
 
-  config.include FactoryGirl::Syntax::Methods
+  config.before(:each) do
+    PaymentEngines.stub(:configuration).and_return({})
+  end
 end
 
 def fixture_file(filename)
