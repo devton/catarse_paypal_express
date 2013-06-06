@@ -3,12 +3,18 @@
 require 'spec_helper'
 
 describe CatarsePaypalExpress::PaypalExpressController do
+  SCOPE = "projects.backers.checkout"
   before do
-    ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return({})
+    PaymentEngines.stub(:find_payment).and_return(backer)
+    PaymentEngines.stub(:create_payment_notification)
+    controller.stub(:main_app).and_return(main_app)
     controller.stub(:current_user).and_return(current_user)
+    controller.stub(:gateway).and_return(gateway)
   end
 
   subject{ response }
+  let(:gateway){ double('gateway') }
+  let(:main_app){ double('main_app') }
   let(:current_user) { double('current_user') }
   let(:project){ double('project', id: 1, name: 'test project') }
   let(:backer){ double('backer', {
@@ -18,6 +24,8 @@ describe CatarsePaypalExpress::PaypalExpressController do
     project: project, 
     pending?: false, 
     value: 10, 
+    display_value: 'R$ 10,00',
+    price_in_cents: 1000,
     user: current_user, 
     payer_name: 'foo',
     payer_email: 'foo@bar.com',
@@ -38,96 +46,64 @@ describe CatarsePaypalExpress::PaypalExpressController do
     let(:backer){ double(:backer, :payment_id => ipn_data['txn_id'] ) }
 
     before do
-      post :ipn, ipn_data.merge({ use_route: 'catarse_paypal_express' })
-    end
-
-    it "should update backer's payment_service_fee" do
-      backer.payment_service_fee.to_f.should == ipn_data['mc_fee'].to_f
-    end
-
-    it "should update backer's payer_email" do
-      backer.payer_email.should == ipn_data['payer_email']
-    end
-
-    it "should create PaymentNotification for the backer" do
-      backer.payment_notifications.first.extra_data['txn_id'].should == ipn_data['txn_id']
+      params = ipn_data.merge({ use_route: 'catarse_paypal_express' })
+      backer.should_receive(:update_attributes).with({
+        payment_service_fee: ipn_data['mc_fee'], 
+        payer_email: ipn_data['payer_email']
+      })
+      controller.should_receive(:process_paypal_message).with(ipn_data.merge({
+        "controller"=>"catarse_paypal_express/paypal_express", 
+        "action"=>"ipn"
+      }))
+      post :ipn, params
     end
 
     its(:status){ should == 200 }
-  end
-  
-  describe "POST notification" do
-    context 'when receive a notification' do
-      it 'and not found the backer, should return 404' do
-        post :notifications, { id: 1, use_route: 'catarse_paypal_express'}
-        response.status.should eq(404)
-      end
-
-      it 'and the transaction ID not match, should return 404' do
-        post :notifications, { id: backer.id, txn_id: 123, use_route: 'catarse_paypal_express' }
-        response.status.should eq(404)
-      end
-
-      it 'should create a payment_notification' do
-        success_payment_response = mock()
-        success_payment_response.stubs(:params).returns({ 'transaction_id' => '1234', "checkout_status" => "PaymentActionCompleted" })
-        success_payment_response.stubs(:success?).returns(true)
-        ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(success_payment_response)
-        post :notifications, { id: backer.id, txn_id: 1234 , use_route: 'catarse_paypal_express' }
-        backer.payment_notifications.should_not be_empty
-      end
-
-      it 'and the transaction ID match, should update the payment status if successful' do
-        success_payment_response = mock()
-        success_payment_response.stubs(:params).returns({ 'transaction_id' => '1234', "checkout_status" => "PaymentActionCompleted" })
-        success_payment_response.stubs(:success?).returns(true)
-        ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for).and_return(success_payment_response)
-        post :notifications, { id: backer.id, txn_id: 1234, use_route: 'catarse_paypal_express' }
-        response.status.should eq(200)
-        backer.confirmed.should be_true
-      end
-    end
+    its(:body){ should == ' ' }
   end
 
   describe "GET pay" do
-    context 'when have some failures' do
-      it 'backer not belongs to current_user should 404' do
-        lambda { 
-          get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-        }.should raise_exception ActiveRecord::RecordNotFound
-      end
+    before do
+      set_paypal_response
+      get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+    end
 
-      it 'raise a exepction because invalid data and should be redirect and set the flash message' do
-        ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:setup_purchase).and_raise(StandardError)
-        get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-        flash[:failure].should == I18n.t('paypal_error', scope: CatarsePaypalExpress::Payment::PaypalExpressController::SCOPE)
-        response.should be_redirect
+
+    context 'when response raises a exception' do
+      let(:set_paypal_response) do 
+        main_app.should_receive(:new_project_backer_path).with(backer.project).and_return('error url')
+        gateway.should_receive(:setup_purchase).and_raise(StandardError)
       end
+      it 'should assign flash error' do
+        controller.flash[:failure].should == I18n.t('paypal_error', scope: SCOPE)
+      end
+      it{ should redirect_to 'error url' }
     end
 
     context 'when successul' do
-      before do
-        success_response = mock()
-        success_response.stub(:token).and_return('ABCD')
-        success_response.stub(:params).and_return({ 'correlation_id' => '123' })
-        ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:setup_purchase).and_return(success_response)
+      let(:set_paypal_response) do 
+        success_response = double('success_response', {
+          token: 'ABCD',
+          params: { 'correlation_id' => '123' }
+        })
+        gateway.should_receive(:setup_purchase).with(
+          backer.price_in_cents, 
+          {
+            ip: request.remote_ip,
+            return_url: 'http://test.host/catarse_paypal_express/payment/paypal_express/1/success',
+            cancel_return_url: 'http://test.host/catarse_paypal_express/payment/paypal_express/1/cancel',
+            currency_code: 'BRL',
+            description: I18n.t('paypal_description', scope: SCOPE, :project_name => backer.project.name, :value => backer.display_value),
+            notify_url: 'http://test.host/catarse_paypal_express/payment/paypal_express/ipn'
+          }
+        ).and_return(success_response)
+        backer.should_receive(:update_attributes).with({
+          payment_method: "PayPal", 
+          payment_token: "ABCD"
+        })
+        gateway.should_receive(:redirect_url_for).with('ABCD').and_return('success url')
       end
-
-      it 'should create a payment_notification' do
-        get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-        backer.payment_notifications.should_not be_empty
-      end
-
-      it 'payment method and token should be persisted ' do
-        get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-        backer.payment_method.should == 'PayPal'
-        backer.payment_token.should == 'ABCD'
-
-        # The correlation id should not be stored in payment_id, which is only for transaction_id
-        backer.payment_id.should be_nil
-
-        response.should be_redirect
-      end
+      it{ should redirect_to 'success url' }
     end
   end
 
