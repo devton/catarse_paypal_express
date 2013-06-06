@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe CatarsePaypalExpress::PaypalExpressController do
-  SCOPE = "projects.backers.checkout"
+  SCOPE = CatarsePaypalExpress::PaypalExpressController::SCOPE
   before do
     PaymentEngines.stub(:find_payment).and_return(backer)
     PaymentEngines.stub(:create_payment_notification)
@@ -108,13 +108,14 @@ describe CatarsePaypalExpress::PaypalExpressController do
   end
 
   describe "GET cancel" do
-    context 'when cancel the paypal purchase' do
-      it 'should show for user the flash message' do
-        get :cancel, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
-        flash[:failure].should == I18n.t('paypal_cancel', scope: CatarsePaypalExpress::Payment::PaypalExpressController::SCOPE)
-        response.should be_redirect
-      end
+    before do
+      main_app.should_receive(:new_project_backer_path).with(backer.project).and_return('new backer url')
+      get :cancel, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
     end
+    it 'should show for user the flash message' do
+      controller.flash[:failure].should == I18n.t('paypal_cancel', scope: SCOPE)
+    end
+    it{ should redirect_to 'new backer url' }
   end
 
   describe "GET success" do
