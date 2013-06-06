@@ -1,5 +1,3 @@
-require 'catarse_paypal_express/processors'
-
 class CatarsePaypalExpress::PaypalExpressController < ApplicationController
   attr_reader :backer
   skip_before_filter :verify_authenticity_token, :only => [:notifications, :success]
