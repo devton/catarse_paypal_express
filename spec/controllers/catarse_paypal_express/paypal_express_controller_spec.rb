@@ -29,6 +29,7 @@ describe CatarsePaypalExpress::PaypalExpressController do
     user: current_user, 
     payer_name: 'foo',
     payer_email: 'foo@bar.com',
+    payment_token: 'token',
     address_street: 'test',
     address_number: '123',
     address_complement: '123',
@@ -119,52 +120,49 @@ describe CatarsePaypalExpress::PaypalExpressController do
   end
 
   describe "GET success" do
-    let(:success_details){ {'transaction_id' => nil, "checkout_status" => "PaymentActionCompleted"} }
-    let(:fake_success_details) do
-      fake_success_details = mock()
-      fake_success_details.stub(:params).and_return(success_details)
-      fake_success_details
+    let(:success_details){ double('success_details', params: {'transaction_id' => '12345', "checkout_status" => "PaymentActionCompleted"}) }
+    let(:params){{ id: backer.id, PayerID: '123', locale: 'en', use_route: 'catarse_paypal_express' }}
+
+    before do
+      gateway.should_receive(:purchase).with(backer.price_in_cents, {
+        ip: request.remote_ip,
+        token: backer.payment_token,
+        payer_id: params[:PayerID]
+      }).and_return(success_details)
+      controller.should_receive(:process_paypal_message).with(success_details.params)
+      backer.should_receive(:update_attributes).with(payment_id: '12345')
+      set_redirect_expectations
+      get :success, params
     end
 
-    context 'paypal returning to success route' do
-
-      context 'when paypal purchase is ok' do
-        before(:each) do
-          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:details_for) do
-            # If we call the details_for before purchase the transaction_id will not be present
-            success_details.delete('transaction_id') unless success_details['transaction_id'] == '12345'
-            fake_success_details
-          end
-          fake_success_purchase = mock()
-          fake_success_purchase.stub(:success?).and_return(true)
-          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:purchase) do
-            # only after the purchase command the transactio_id is set in the details_for
-            success_details['transaction_id'] = '12345' if success_details.include?('transaction_id')
-            fake_success_purchase
-          end
-        end
-
-        it 'should update the backer and redirect to thank_you' do
-          get :success, { id: backer.id, PayerID: '123', locale: 'en', use_route: 'catarse_paypal_express' }
-          backer.payment_notifications.should_not be_empty
-          backer.confirmed.should be_true
-          backer.payment_id.should == '12345'
-          response.should redirect_to("/projects/#{backer.project.id}/backers/#{backer.id}")
-        end
+    context "when purchase is successful" do
+      let(:set_redirect_expectations) do
+        main_app.
+          should_receive(:project_backer_path).
+          with(project_id: backer.project.id, id: backer.id).
+          and_return('back url')
       end
-
-      context 'when paypal purchase raise a error' do
-        before do
-          ActiveMerchant::Billing::PaypalExpressGateway.any_instance.stub(:purchase).and_raise(StandardError)
-        end
-
-        it 'should be redirect and show a flash message' do
-          get :success, { id: backer.id, PayerID: '123', locale: 'en', use_route: 'catarse_paypal_express' }
-
-          flash[:failure].should == I18n.t('paypal_error', scope: CatarsePaypalExpress::Payment::PaypalExpressController::SCOPE)
-          response.should be_redirect
-        end
+      it{ should redirect_to 'back url' }
+      it 'should assign flash message' do
+        controller.flash[:success].should == I18n.t('success', scope: SCOPE)
       end
+    end
+
+    context 'when paypal purchase raises some error' do
+      let(:set_redirect_expectations) do
+        main_app.
+          should_receive(:project_backer_path).
+          with(project_id: backer.project.id, id: backer.id).
+          and_raise('error')
+        main_app.
+          should_receive(:new_project_backer_path).
+          with(backer.project).
+          and_return('new back url')
+      end
+      it 'should assign flash error' do
+        controller.flash[:failure].should == I18n.t('paypal_error', scope: SCOPE)
+      end
+      it{ should redirect_to 'new back url' }
     end
   end
 

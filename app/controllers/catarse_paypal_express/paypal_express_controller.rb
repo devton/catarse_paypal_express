@@ -45,17 +45,16 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
 
   def success
     begin
-      gateway.purchase(backer.price_in_cents, {
+      purchase = gateway.purchase(backer.price_in_cents, {
         ip: request.remote_ip,
         token: backer.payment_token,
         payer_id: params[:PayerID]
       })
 
       # we must get the deatils after the purchase in order to get the transaction_id
-      details = gateway.details_for(backer.payment_token)
-      process_paypal_message details.params
-      
-      backer.update_attribute :payment_id, details.params['transaction_id'] if details.params['transaction_id'] 
+      process_paypal_message purchase.params
+      backer.update_attributes payment_id: purchase.params['transaction_id'] if purchase.params['transaction_id'] 
+
       flash[:success] = t('success', scope: SCOPE)
       redirect_to main_app.project_backer_path(project_id: backer.project.id, id: backer.id)
     rescue Exception => e
