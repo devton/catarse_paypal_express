@@ -166,4 +166,33 @@ describe CatarsePaypalExpress::PaypalExpressController do
     end
   end
 
+  describe "#gateway" do
+    before do
+      controller.stub(:gateway).and_call_original
+      PaymentEngines.stub(:configuration).and_return(paypal_config)
+    end
+    subject{ controller.gateway }
+    context "when we have the paypal configuration" do
+      let(:paypal_config) do
+        { paypal_username: 'username', paypal_password: 'pass', paypal_signature: 'signature' }
+      end
+      before do
+        ActiveMerchant::Billing::PaypalExpressGateway.should_receive(:new).with({
+          login: PaymentEngines.configuration[:paypal_username],
+          password: PaymentEngines.configuration[:paypal_password],
+          signature: PaymentEngines.configuration[:paypal_signature]
+        }).and_return('gateway instance')
+      end
+      it{ should == 'gateway instance' }
+    end
+
+    context "when we do not have the paypal configuration" do
+      let(:paypal_config){ {} }
+      before do
+        ActiveMerchant::Billing::PaypalExpressGateway.should_not_receive(:new)
+      end
+      it{ should be_nil }
+    end
+  end
+
 end
