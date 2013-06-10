@@ -1,4 +1,4 @@
-# CatarsePaypalExpress
+# CatarsePaypalExpress [![Build Status](https://travis-ci.org/catarse/catarse_paypal_express.png)](https://travis-ci.org/catarse/catarse_paypal_express) 
 
 Catarse paypal express integration with [Catarse](http://github.com/danielweinmann/catarse) crowdfunding platform
 
@@ -44,12 +44,6 @@ Add the catarse code into test/dummy:
 And then execute:
 
     $ bundle
-
-## Troubleshooting in development environment
-
-Remove the admin folder from test/dummy application to prevent a weird active admin bug:
-
-    $ rm -rf test/dummy/app/admin
 
 ## Contributing
 
