@@ -243,6 +243,14 @@ describe CatarsePaypalExpress::PaypalExpressController do
       it("should call refund"){ subject }
     end
 
+    context "when it's a completed message" do
+      let(:data){ {'payment_status' => 'Completed'} }
+      before do
+        backer.should_receive(:confirm!)
+      end
+      it("should call confirm"){ subject }
+    end
+
     context "when it's a cancelation message" do
       let(:data){ {'payment_status' => 'canceled_reversal'} }
       before do

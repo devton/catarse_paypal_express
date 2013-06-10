@@ -81,6 +81,8 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
       backer.confirm! 
     elsif data["payment_status"]
       case data["payment_status"].downcase
+      when 'completed'
+        backer.confirm! 
       when 'refunded'
         backer.refund!
       when 'canceled_reversal'
