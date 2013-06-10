@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 3.2.6"
   s.add_dependency "activemerchant", ">= 1.17.0"
+  s.add_dependency "slim-rails"
 
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "factory_girl_rails"
