@@ -22,7 +22,7 @@ describe CatarsePaypalExpress::PaypalExpressController do
     key: 'backer key', 
     payment_id: 'payment id', 
     project: project, 
-    pending?: false, 
+    pending?: true, 
     value: 10, 
     display_value: 'R$ 10,00',
     price_in_cents: 1000,
@@ -211,6 +211,54 @@ describe CatarsePaypalExpress::PaypalExpressController do
         PaymentEngines.should_receive(:find_payment).with(payment_id: '1').and_return(backer)
       end
       it{ should == backer }
+    end
+  end
+
+  describe "#process_paypal_message" do
+    subject{ controller.process_paypal_message data }
+    let(:data){ {'test_data' => true} }
+    before do
+      PaymentEngines.should_receive(:create_payment_notification).with(backer_id: backer.id, extra_data: data)
+    end
+    
+    context "when data['checkout_status'] == 'PaymentActionCompleted'" do
+      let(:data){ {'checkout_status' => 'PaymentActionCompleted'} }
+      before do
+        backer.should_receive(:confirm!)
+      end
+      it("should call confirm"){ subject }
+    end
+
+    context "when it's a refund message" do
+      let(:data){ {'payment_status' => 'refunded'} }
+      before do
+        backer.should_receive(:refund!)
+      end
+      it("should call refund"){ subject }
+    end
+
+    context "when it's a cancelation message" do
+      let(:data){ {'payment_status' => 'canceled_reversal'} }
+      before do
+        backer.should_receive(:cancel!)
+      end
+      it("should call cancel"){ subject }
+    end
+
+    context "when it's a payment expired message" do
+      let(:data){ {'payment_status' => 'expired'} }
+      before do
+        backer.should_receive(:pendent!)
+      end
+      it("should call pendent"){ subject }
+    end
+
+    context "all other values of payment_status" do
+      let(:data){ {'payment_status' => 'other'} }
+      before do
+        backer.should_receive(:waiting!)
+      end
+      it("should call waiting"){ subject }
     end
   end
 end
