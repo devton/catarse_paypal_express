@@ -195,4 +195,22 @@ describe CatarsePaypalExpress::PaypalExpressController do
     end
   end
 
+  describe "#backer" do
+    subject{ controller.backer }
+    context "when we have an id" do
+      before do
+        controller.stub(:params).and_return({'id' => '1'})
+        PaymentEngines.should_receive(:find_payment).with(id: '1').and_return(backer)
+      end
+      it{ should == backer }
+    end
+
+    context "when we have an txn_id" do
+      before do
+        controller.stub(:params).and_return({'txn_id' => '1'})
+        PaymentEngines.should_receive(:find_payment).with(payment_id: '1').and_return(backer)
+      end
+      it{ should == backer }
+    end
+  end
 end

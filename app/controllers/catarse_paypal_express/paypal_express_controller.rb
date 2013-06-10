@@ -70,7 +70,7 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
   end
 
   def backer
-    @backer ||= (params[:id] ? PaymentEngines.find_payment(id: params[:id]) : PaymentEngines.find_payment(payment_id: params['txn_id']))
+    @backer ||= (params['id'] ? PaymentEngines.find_payment(id: params['id']) : PaymentEngines.find_payment(payment_id: params['txn_id']))
   end
 
   def process_paypal_message(data)
