@@ -1,0 +1,13 @@
+rvm: 
+  - 1.9.3
+
+before_script:
+  - "psql -c 'create role catarse SUPERUSER LOGIN;' postgres"
+  - "psql -c 'create database catarse_test;' -U catarse postgres"
+
+script:
+  - "bundle exec rspec spec"
+
+branches:
+  only:
+    - master
