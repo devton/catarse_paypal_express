@@ -74,7 +74,7 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
   end
 
   def process_paypal_message(data)
-    extra_data = (data['charset'] ? JSON.parse(params.to_json.force_encoding(data['charset']).encode('utf-8')) : data)
+    extra_data = (data['charset'] ? JSON.parse(data.to_json.force_encoding(data['charset']).encode('utf-8')) : data)
     PaymentEngines.create_payment_notification backer_id: backer.id, extra_data: extra_data
 
     if data["checkout_status"] == 'PaymentActionCompleted'
