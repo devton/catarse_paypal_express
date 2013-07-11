@@ -211,6 +211,15 @@ describe CatarsePaypalExpress::PaypalExpressController do
       it{ should == backer }
     end
 
+    context "when we have an txn_id that does not return backer but a parent_txn_id that does" do
+      before do
+        controller.stub(:params).and_return({'txn_id' => '1', 'parent_txn_id' => '2'})
+        PaymentEngines.should_receive(:find_payment).with(payment_id: '1').and_return(nil)
+        PaymentEngines.should_receive(:find_payment).with(payment_id: '2').and_return(backer)
+      end
+      it{ should == backer }
+    end
+
     context "when we have an txn_id" do
       before do
         controller.stub(:params).and_return({'txn_id' => '1'})
