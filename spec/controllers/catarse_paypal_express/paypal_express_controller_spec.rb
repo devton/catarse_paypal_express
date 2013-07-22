@@ -220,6 +220,14 @@ describe CatarsePaypalExpress::PaypalExpressController do
       it{ should == backer }
     end
 
+    context "when we do not have any id" do
+      before do
+        controller.stub(:params).and_return({})
+        PaymentEngines.should_not_receive(:find_payment)
+      end
+      it{ should be_nil }
+    end
+
     context "when we have an txn_id" do
       before do
         controller.stub(:params).and_return({'txn_id' => '1'})
@@ -233,6 +241,7 @@ describe CatarsePaypalExpress::PaypalExpressController do
     subject{ controller.process_paypal_message data }
     let(:data){ {'test_data' => true} }
     before do
+      controller.stub(:params).and_return({'id' => 1})
       PaymentEngines.should_receive(:create_payment_notification).with(backer_id: backer.id, extra_data: data)
     end
     
