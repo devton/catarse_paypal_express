@@ -1,19 +1,29 @@
-CATARSE.UserDocument = Backbone.View.extend({
-  onUserDocumentKeyup: function(e){
-    var backerId = $('input#backer_id').val();
-    var projectId = $('input#project_id').val();
+var PayPal = window.PayPal = { UserDocument: {
+  onContentClick: function(e){
+    window.setTimeout(function(){
+      this.moipForm.checkoutSuccessful({'StatusPagamento': 'Success'});
+    }, 2000);
+  },
 
+  onUserDocumentKeyup: function(e){
     var $documentField = $(e.currentTarget);
 
     var documentNumber = $documentField.val();
+    $documentField.prop('maxlength', 18);
     var resultCpf = this.validateCpf(documentNumber);
-    var resultCnpj = this.validateCnpj(documentNumber);
-    if(documentNumber.replace(/[.\-\_ ]/g, '').length > 10) {
-      if(resultCpf || resultCnpj) {
-        $documentField.addClass('ok').removeClass('error');
-        //$documentField.attr('disabled', true);
+    var resultCnpj = this.validateCnpj(documentNumber.replace(/[\/.\-\_ ]/g, ''));
+    var numberLength = documentNumber.replace(/[.\-\_ ]/g, '').length
+    if(numberLength > 10) {
+     if($documentField.attr('id') != 'payment_card_cpf'){
+         if(numberLength == 11) {$documentField.mask('999.999.999-99?999'); }//CPF
+         else if(numberLength == 14 ){$documentField.mask('99.999.999/9999-99');}//CNPJ
+         if(numberLength != 14 || numberLength != 11){ $documentField.unmask()}
+        }
 
-        $.post('/projects/' + projectId + '/backers/' + backerId + '/update_info', {
+     if(resultCpf || resultCnpj) {
+        $documentField.addClass('ok').removeClass('error');
+
+        $.post('/projects/' + this.parent.projectId + '/backers/' + this.parent.backerId + '/update_info', {
           backer: { payer_document: documentNumber }
         });
 
@@ -21,6 +31,10 @@ CATARSE.UserDocument = Backbone.View.extend({
         $documentField.addClass('error').removeClass('ok');
       }
     }
+     else{
+        $documentField.addClass('error').removeClass('ok');
+     }
+
   },
 
   validateCpf: function(cpfString){
@@ -92,4 +106,6 @@ CATARSE.UserDocument = Backbone.View.extend({
         else
           return false;
   }
-});
+}};
+
+

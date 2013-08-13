@@ -1,4 +1,4 @@
-CATARSE.PayPalForm = CATARSE.UserDocument.extend({
+App.addChild('PayPalForm', _.extend({
   el: '#catarse_paypal_express_form',
 
   events: {
@@ -6,12 +6,14 @@ CATARSE.PayPalForm = CATARSE.UserDocument.extend({
     'keyup #user_document' : 'onUserDocumentKeyup'
   },
 
-  initialize: function() {
+  activate: function() {
     this.loader = $('.loader');
+    this.parent.backerId = $('input#backer_id').val();
+    this.parent.projectId = $('input#project_id').val();
   },
 
   onSubmitToPayPal: function(e) {
     $(e.currentTarget).hide();
     this.loader.show();
   }
-});
+}, window.PayPal.UserDocument));
