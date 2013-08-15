@@ -8,8 +8,8 @@ require "catarse_paypal_express/version"
 Gem::Specification.new do |s|
   s.name        = "catarse_paypal_express"
   s.version     = CatarsePaypalExpress::VERSION
-  s.authors     = ["Antônio Roberto Silva"]
-  s.email       = ["forevertonny@gmail.com"]
+  s.authors     = ["Antônio Roberto Silva", "Diogo Biazus", "Josemar Davi Luedke"]
+  s.email       = ["forevertonny@gmail.com", "diogob@gmail.com", "josemarluedke@gmail.com"]
   s.homepage    = "http://github.com/devton/catarse_paypal_express"
   s.summary     = "PaypalExpress integration with Catarse"
   s.description = "PaypalExpress integration with Catarse crowdfunding platform"
