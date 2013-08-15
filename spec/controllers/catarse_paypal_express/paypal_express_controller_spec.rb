@@ -18,15 +18,15 @@ describe CatarsePaypalExpress::PaypalExpressController do
   let(:current_user) { double('current_user') }
   let(:project){ double('project', id: 1, name: 'test project') }
   let(:backer){ double('backer', {
-    id: 1, 
-    key: 'backer key', 
-    payment_id: 'payment id', 
-    project: project, 
-    pending?: true, 
-    value: 10, 
+    id: 1,
+    key: 'backer key',
+    payment_id: 'payment id',
+    project: project,
+    pending?: true,
+    value: 10,
     display_value: 'R$ 10,00',
     price_in_cents: 1000,
-    user: current_user, 
+    user: current_user,
     payer_name: 'foo',
     payer_email: 'foo@bar.com',
     payment_token: 'token',
@@ -42,7 +42,7 @@ describe CatarsePaypalExpress::PaypalExpressController do
 
   describe "GET review" do
     before do
-      get :review, id: backer.id, use_route: 'catarse_paypal_express' 
+      get :review, id: backer.id, use_route: 'catarse_paypal_express'
     end
     it{ should render_template(:review) }
   end
@@ -55,11 +55,11 @@ describe CatarsePaypalExpress::PaypalExpressController do
     before do
       params = ipn_data.merge({ use_route: 'catarse_paypal_express' })
       backer.should_receive(:update_attributes).with({
-        payment_service_fee: ipn_data['mc_fee'], 
+        payment_service_fee: ipn_data['mc_fee'],
         payer_email: ipn_data['payer_email']
       })
       controller.should_receive(:process_paypal_message).with(ipn_data.merge({
-        "controller"=>"catarse_paypal_express/paypal_express", 
+        "controller"=>"catarse_paypal_express/paypal_express",
         "action"=>"ipn"
       }))
       post :ipn, params
@@ -69,15 +69,15 @@ describe CatarsePaypalExpress::PaypalExpressController do
     its(:body){ should == ' ' }
   end
 
-  describe "GET pay" do
+  describe "POST pay" do
     before do
       set_paypal_response
-      get :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
+      post :pay, { id: backer.id, locale: 'en', use_route: 'catarse_paypal_express' }
     end
 
 
     context 'when response raises a exception' do
-      let(:set_paypal_response) do 
+      let(:set_paypal_response) do
         main_app.should_receive(:new_project_backer_path).with(backer.project).and_return('error url')
         gateway.should_receive(:setup_purchase).and_raise(StandardError)
       end
@@ -88,13 +88,13 @@ describe CatarsePaypalExpress::PaypalExpressController do
     end
 
     context 'when successul' do
-      let(:set_paypal_response) do 
+      let(:set_paypal_response) do
         success_response = double('success_response', {
           token: 'ABCD',
           params: { 'correlation_id' => '123' }
         })
         gateway.should_receive(:setup_purchase).with(
-          backer.price_in_cents, 
+          backer.price_in_cents,
           {
             ip: request.remote_ip,
             return_url: 'http://test.host/catarse_paypal_express/payment/paypal_express/1/success',
@@ -105,7 +105,7 @@ describe CatarsePaypalExpress::PaypalExpressController do
           }
         ).and_return(success_response)
         backer.should_receive(:update_attributes).with({
-          payment_method: "PayPal", 
+          payment_method: "PayPal",
           payment_token: "ABCD"
         })
         gateway.should_receive(:redirect_url_for).with('ABCD').and_return('success url')
@@ -244,7 +244,7 @@ describe CatarsePaypalExpress::PaypalExpressController do
       controller.stub(:params).and_return({'id' => 1})
       PaymentEngines.should_receive(:create_payment_notification).with(backer_id: backer.id, extra_data: data)
     end
-    
+
     context "when data['checkout_status'] == 'PaymentActionCompleted'" do
       let(:data){ {'checkout_status' => 'PaymentActionCompleted'} }
       before do
