@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.version     = CatarsePaypalExpress::VERSION
   s.authors     = ["Antônio Roberto Silva"]
   s.email       = ["forevertonny@gmail.com"]
-  s.homepage    = "http://github.com/devton/catarse_paypal_express"
+  s.homepage    = "http://github.com/catarse/catarse_paypal_express"
   s.summary     = "PaypalExpress integration with Catarse"
   s.description = "PaypalExpress integration with Catarse crowdfunding platform"
 
