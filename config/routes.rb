@@ -5,10 +5,10 @@ CatarsePaypalExpress::Engine.routes.draw do
     end
 
     member do
-      get   :review
-      match :pay
-      match :success
-      match :cancel
+      get  :review
+      post :pay
+      get  :success
+      get  :cancel
     end
   end
 end

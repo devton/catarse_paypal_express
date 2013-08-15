@@ -25,11 +25,11 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
     begin
       response = gateway.setup_purchase(backer.price_in_cents, {
         ip: request.remote_ip,
-        return_url: success_paypal_expres_url(id: backer.id),
-        cancel_return_url: cancel_paypal_expres_url(id: backer.id),
+        return_url: success_paypal_express_url(id: backer.id),
+        cancel_return_url: cancel_paypal_express_url(id: backer.id),
         currency_code: 'BRL',
         description: t('paypal_description', scope: SCOPE, :project_name => backer.project.name, :value => backer.display_value),
-        notify_url: ipn_paypal_express_url
+        notify_url: ipn_paypal_express_index_url
       })
 
       process_paypal_message response.params
@@ -53,7 +53,7 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
 
       # we must get the deatils after the purchase in order to get the transaction_id
       process_paypal_message purchase.params
-      backer.update_attributes payment_id: purchase.params['transaction_id'] if purchase.params['transaction_id'] 
+      backer.update_attributes payment_id: purchase.params['transaction_id'] if purchase.params['transaction_id']
 
       flash[:success] = t('success', scope: SCOPE)
       redirect_to main_app.project_backer_path(project_id: backer.project.id, id: backer.id)
@@ -82,17 +82,17 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
     PaymentEngines.create_payment_notification backer_id: backer.id, extra_data: extra_data
 
     if data["checkout_status"] == 'PaymentActionCompleted'
-      backer.confirm! 
+      backer.confirm!
     elsif data["payment_status"]
       case data["payment_status"].downcase
       when 'completed'
-        backer.confirm! 
+        backer.confirm!
       when 'refunded'
         backer.refund!
       when 'canceled_reversal'
         backer.cancel!
       when 'expired', 'denied'
-        backer.pendent! 
+        backer.pendent!
       else
         backer.waiting! if backer.pending?
       end
