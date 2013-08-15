@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    catarse_paypal_express (0.1.0)
+    catarse_paypal_express (1.0.0)
       activemerchant (>= 1.17.0)
       rails (~> 3.2.6)
       slim-rails
@@ -64,7 +64,7 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mime-types (1.23)
+    mime-types (1.24)
     money (5.1.1)
       i18n (~> 0.6.0)
     multi_json (1.7.6)
