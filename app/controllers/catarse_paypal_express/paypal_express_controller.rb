@@ -10,9 +10,9 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
     refund_request = gateway.refund(nil, backer.payment_id)
 
     if refund_request.success?
-      flash[:notice] = t('projects.backers.refund.success')
+      flash[:notice] = I18n.t('projects.backers.refund.success')
     else
-      flash[:alert] = t('projects.backers.refund.error')
+      flash[:alert] = I18n.t('projects.backers.refund.error')
     end
 
     redirect_to main_app.admin_backers_path
