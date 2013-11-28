@@ -1,4 +1,6 @@
 class CatarsePaypalExpress::PaypalExpressController < ApplicationController
+  include ActiveMerchant::Billing::Integrations
+
   skip_before_filter :force_http
   SCOPE = "projects.backers.checkout"
   layout :false
@@ -7,14 +9,14 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
   end
 
   def ipn
-    if backer
+    if backer && notification.acknowledge
       process_paypal_message params
       backer.update_attributes({
         :payment_service_fee => params['mc_fee'],
         :payer_email => params['payer_email']
       })
     else
-      return render status: 500, text: e.inspect
+      return render status: 500, nothing: true
     end
     return render status: 200, nothing: true
   rescue Exception => e
@@ -109,5 +111,11 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
     else
       puts "[PayPal] An API Certificate or API Signature is required to make requests to PayPal"
     end
+  end
+
+  protected
+
+  def notification
+    @notification ||= Paypal::Notification.new(request.raw_post)
   end
 end
