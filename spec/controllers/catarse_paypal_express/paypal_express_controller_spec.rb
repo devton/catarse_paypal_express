@@ -40,6 +40,21 @@ describe CatarsePaypalExpress::PaypalExpressController do
     address_phone_number: '123'
   }) }
 
+  describe "POST refund" do
+    before do
+      success_refund = double
+      success_refund.stub(:success?).and_return(true)
+
+      main_app.should_receive(:admin_backers_path).and_return('admin_backers_path')
+
+      gateway.should_receive(:refund).with(nil, backer.payment_id).and_return(success_refund)
+
+      post :refund, id: backer.id, use_route: 'catarse_paypal_express'
+    end
+
+    it { should redirect_to('admin_backers_path') }
+  end
+
   describe "GET review" do
     before do
       get :review, id: backer.id, use_route: 'catarse_paypal_express'

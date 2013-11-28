@@ -5,6 +5,7 @@ CatarsePaypalExpress::Engine.routes.draw do
     end
 
     member do
+      post :refund
       get  :review
       post :pay
       get  :success
