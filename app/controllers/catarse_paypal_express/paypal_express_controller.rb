@@ -21,7 +21,7 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
   end
 
   def ipn
-    if backer && notification.acknowledge
+    if backer && notification.acknowledge && (backer.payment_method == 'PayPal' || backer.payment_method.nil?)
       process_paypal_message params
       backer.update_attributes({
         :payment_service_fee => params['mc_fee'],

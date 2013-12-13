@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    catarse_paypal_express (2.0.0)
+    catarse_paypal_express (2.1.0)
       activemerchant (>= 1.34.0)
       rails (~> 4.0)
       slim-rails
@@ -44,7 +44,7 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
-    arel (4.0.0)
+    arel (4.0.1)
     atomic (1.1.13)
     builder (3.1.4)
     database_cleaner (1.1.1)
@@ -61,7 +61,7 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mime-types (1.24)
+    mime-types (1.25.1)
     minitest (4.7.5)
     money (5.1.1)
       i18n (~> 0.6.0)
@@ -105,12 +105,12 @@ GEM
       activesupport (>= 3.0, < 4.1)
       railties (>= 3.0, < 4.1)
       slim (~> 2.0)
-    sprockets (2.10.0)
+    sprockets (2.10.1)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    sprockets-rails (2.0.0)
+    sprockets-rails (2.0.1)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (~> 2.8)
@@ -119,7 +119,7 @@ GEM
     thread_safe (0.1.2)
       atomic
     tilt (1.4.1)
-    treetop (1.4.14)
+    treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.37)
