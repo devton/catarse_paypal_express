@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    catarse_paypal_express (2.1.0)
+    catarse_paypal_express (2.1.1)
       activemerchant (>= 1.34.0)
       rails (~> 4.0)
       slim-rails
