@@ -23,8 +23,8 @@ var PayPal = window.PayPal = { UserDocument: {
      if(resultCpf || resultCnpj) {
         $documentField.addClass('ok').removeClass('error');
 
-        $.post('/projects/' + this.parent.projectId + '/backers/' + this.parent.backerId + '/update_info', {
-          backer: { payer_document: documentNumber }
+        $.post('/projects/' + this.parent.projectId + '/contributions/' + this.parent.contributionId + '/update_info', {
+          contribution: { payer_document: documentNumber }
         });
 
       } else {

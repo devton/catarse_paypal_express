@@ -1,13 +1,13 @@
 = javascript_include_tag 'catarse_paypal_express'
 
-h3= t('projects.backers.review.international.section_title')
+h3= t('projects.contributions.review.international.section_title')
 
 #catarse_paypal_express_form
   = form_tag pay_paypal_express_path(params[:id]) do
     .clearfix
     .bootstrap-twitter
-      = label_tag 'user_document', t('projects.backers.review.international.user_document_label')
+      = label_tag 'user_document', t('projects.contributions.review.international.user_document_label')
       .clearfix
       = text_field_tag 'user_document', nil, { autocomplete: 'off' }
       .loader.hide= image_tag 'loading.gif'
-      = submit_tag t('projects.backers.review.international.button'), :class => 'btn btn-primary btn-large'
+      = submit_tag t('projects.contributions.review.international.button'), :class => 'btn btn-primary btn-large'
