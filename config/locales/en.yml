@@ -1,6 +1,6 @@
 en:
   projects:
-    backers:
+    contributions:
       refund:
         success: 'Pedido de reembolso enviado com sucesso!'
         error: 'OPS! Ocorreu um erro ao tentar enviar o pedido de reembolso.'

@@ -8,7 +8,7 @@ App.addChild('PayPalForm', _.extend({
 
   activate: function() {
     this.loader = $('.loader');
-    this.parent.backerId = $('input#backer_id').val();
+    this.parent.contributionId = $('input#contribution_id').val();
     this.parent.projectId = $('input#project_id').val();
   },
 
