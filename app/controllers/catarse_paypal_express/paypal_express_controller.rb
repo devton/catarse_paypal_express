@@ -115,15 +115,7 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
   end
 
   def gateway
-    if PaymentEngines.configuration[:paypal_username] and PaymentEngines.configuration[:paypal_password] and PaymentEngines.configuration[:paypal_signature]
-      @gateway ||= ActiveMerchant::Billing::PaypalExpressGateway.new({
-        login: PaymentEngines.configuration[:paypal_username],
-        password: PaymentEngines.configuration[:paypal_password],
-        signature: PaymentEngines.configuration[:paypal_signature]
-      })
-    else
-      puts "[PayPal] An API Certificate or API Signature is required to make requests to PayPal"
-    end
+    @gateway ||= CatarsePaypalExpress::Gateway.instance
   end
 
   protected
