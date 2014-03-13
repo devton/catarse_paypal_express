@@ -8,19 +8,6 @@ class CatarsePaypalExpress::PaypalExpressController < ApplicationController
   def review
   end
 
-  def refund
-    refund_request = gateway.refund(nil, contribution.payment_id)
-
-
-    if refund_request.success?
-      flash[:notice] = I18n.t('projects.contributions.refund.success')
-    else
-      flash[:alert] = refund_request.try(:message) || I18n.t('projects.contributions.refund.error')
-    end
-
-    redirect_to main_app.admin_contributions_path
-  end
-
   def ipn
     if contribution && notification.acknowledge && (contribution.payment_method == 'PayPal' || contribution.payment_method.nil?)
       process_paypal_message params
