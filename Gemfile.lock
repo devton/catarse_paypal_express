@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    catarse_paypal_express (2.2.0)
+    catarse_paypal_express (2.2.2)
       activemerchant (>= 1.34.0)
       rails (~> 4.0)
       slim-rails
@@ -44,7 +44,7 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
-    arel (4.0.1)
+    arel (4.0.2)
     atomic (1.1.13)
     builder (3.1.4)
     database_cleaner (1.1.1)
@@ -68,7 +68,7 @@ GEM
     multi_json (1.7.9)
     nokogiri (1.5.10)
     pg (0.16.0)
-    polyglot (0.3.3)
+    polyglot (0.3.4)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -105,7 +105,7 @@ GEM
       activesupport (>= 3.0, < 4.1)
       railties (>= 3.0, < 4.1)
       slim (~> 2.0)
-    sprockets (2.10.1)
+    sprockets (2.12.0)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
