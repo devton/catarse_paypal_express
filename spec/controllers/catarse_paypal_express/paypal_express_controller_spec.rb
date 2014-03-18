@@ -41,21 +41,6 @@ describe CatarsePaypalExpress::PaypalExpressController do
     payment_method: 'PayPal'
   }) }
 
-  describe "POST refund" do
-    before do
-      success_refund = double
-      success_refund.stub(:success?).and_return(true)
-
-      main_app.should_receive(:admin_contributions_path).and_return('admin_contributions_path')
-
-      gateway.should_receive(:refund).with(nil, contribution.payment_id).and_return(success_refund)
-
-      post :refund, id: contribution.id, use_route: 'catarse_paypal_express'
-    end
-
-    it { should redirect_to('admin_contributions_path') }
-  end
-
   describe "GET review" do
     before do
       get :review, id: contribution.id, use_route: 'catarse_paypal_express'
